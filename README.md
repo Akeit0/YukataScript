@@ -23,6 +23,7 @@ I need your help.
 
 
 ## Not currently supported
+- funcions and classes
 - Generics (Manual setting may solve it.)
 - Await with return value 
 - Primitive Types  without int, float,double,char,string 
