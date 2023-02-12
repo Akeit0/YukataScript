@@ -1,0 +1,64 @@
+{
+    "value": [
+        {
+            "Name": "bool",
+            "CodeGenerationType": 1
+        },
+        {
+            "Name": "int",
+            "CodeGenerationType": 1
+        },
+        {
+            "Name": "double",
+            "CodeGenerationType": 1
+        },
+        {
+            "Name": "float",
+            "CodeGenerationType": 1
+        },
+        {
+            "Name": "string",
+            "CodeGenerationType": 1
+        },
+        {
+            "Name": "UnityEngine.MonoBehaviour",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Behaviour",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Component",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Object",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Vector3",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Mathf",
+            "CodeGenerationType": 0
+        },
+        {
+            "Name": "UnityEngine.Transform",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.GameObject",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "System.Enum",
+            "CodeGenerationType": 0
+        },
+        {
+            "Name": "UnityEngine.Color",
+            "CodeGenerationType": 2
+        }
+    ]
+}

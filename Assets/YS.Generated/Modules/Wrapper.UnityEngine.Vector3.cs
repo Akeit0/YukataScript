@@ -1,0 +1,80 @@
+using Vector3 = UnityEngine.Vector3;
+using IFormatProvider = System.IFormatProvider;
+
+namespace YS.Generated {
+    public static partial class Wrapper {
+        public static TypeModule Create_UnityEngine_Vector3Module(global::System.Type baseType=null) {
+            var module = new TypeModule(typeof(Vector3));
+            module.RegisterConstructor(typeof(float),typeof(float),typeof(float),(result, input1, input2, input3) => result.SetValue( new Vector3(input1.As<float>(),input2.As<float>(),input3.As<float>())));
+            module.RegisterConstructor(typeof(float),typeof(float),(result, input1, input2) => result.SetValue( new Vector3(input1.As<float>(),input2.As<float>())));
+            module.RegisterConst("kEpsilon",new Variable<float>(Vector3.kEpsilon));
+            module.RegisterConst("kEpsilonNormalSqrt",new Variable<float>(Vector3.kEpsilonNormalSqrt));
+            module.RegisterFieldGetter("x", (result, input1) => result.SetValue(input1.As<Vector3>().x));
+            module.RegisterFieldSetter("x", (input1, input2) => input1.As<Vector3>().x=input2.As<float>());
+            module.RegisterFieldGetter("y", (result, input1) => result.SetValue(input1.As<Vector3>().y));
+            module.RegisterFieldSetter("y", (input1, input2) => input1.As<Vector3>().y=input2.As<float>());
+            module.RegisterFieldGetter("z", (result, input1) => result.SetValue(input1.As<Vector3>().z));
+            module.RegisterFieldSetter("z", (input1, input2) => input1.As<Vector3>().z=input2.As<float>());
+            module.RegisterPropertyGetter("zero", result => result.SetValue(Vector3.zero));
+            module.RegisterPropertyGetter("one", result => result.SetValue(Vector3.one));
+            module.RegisterPropertyGetter("forward", result => result.SetValue(Vector3.forward));
+            module.RegisterPropertyGetter("back", result => result.SetValue(Vector3.back));
+            module.RegisterPropertyGetter("up", result => result.SetValue(Vector3.up));
+            module.RegisterPropertyGetter("down", result => result.SetValue(Vector3.down));
+            module.RegisterPropertyGetter("left", result => result.SetValue(Vector3.left));
+            module.RegisterPropertyGetter("right", result => result.SetValue(Vector3.right));
+            module.RegisterPropertyGetter("positiveInfinity", result => result.SetValue(Vector3.positiveInfinity));
+            module.RegisterPropertyGetter("negativeInfinity", result => result.SetValue(Vector3.negativeInfinity));
+            module.RegisterPropertyGetter("normalized", (result, input1) => result.SetValue(input1.As<Vector3>().normalized));
+            module.RegisterPropertyGetter("magnitude", (result, input1) => result.SetValue(input1.As<Vector3>().magnitude));
+            module.RegisterPropertyGetter("sqrMagnitude", (result, input1) => result.SetValue(input1.As<Vector3>().sqrMagnitude));
+            module.RegisterMethod("Slerp", (result, input1, input2, input3) => result.SetValue(Vector3.Slerp(input1.As<Vector3>(),input2.As<Vector3>(),input3.As<float>())));
+            module.RegisterMethod("SlerpUnclamped", (result, input1, input2, input3) => result.SetValue(Vector3.SlerpUnclamped(input1.As<Vector3>(),input2.As<Vector3>(),input3.As<float>())));
+            module.RegisterMethod("OrthoNormalize", Types(typeof(Vector3).MakeByRefType(),typeof(Vector3).MakeByRefType()),(input1, input2) => Vector3.OrthoNormalize(ref input1.As<Vector3>(),ref input2.As<Vector3>()));
+            module.RegisterMethod("OrthoNormalize", Types(typeof(Vector3).MakeByRefType(),typeof(Vector3).MakeByRefType(),typeof(Vector3).MakeByRefType()),(input1, input2, input3)  =>  Vector3.OrthoNormalize(ref input1.As<Vector3>(),ref input2.As<Vector3>(),ref input3.As<Vector3>()));
+            module.RegisterMethod("RotateTowards", (result, input1, input2, input3, input4) => result.SetValue(Vector3.RotateTowards(input1.As<Vector3>(),input2.As<Vector3>(),input3.As<float>(),input4.As<float>())));
+            module.RegisterMethod("Lerp", (result, input1, input2, input3) => result.SetValue(Vector3.Lerp(input1.As<Vector3>(),input2.As<Vector3>(),input3.As<float>())));
+            module.RegisterMethod("LerpUnclamped", (result, input1, input2, input3) => result.SetValue(Vector3.LerpUnclamped(input1.As<Vector3>(),input2.As<Vector3>(),input3.As<float>())));
+            module.RegisterMethod("MoveTowards", (result, input1, input2, input3) => result.SetValue(Vector3.MoveTowards(input1.As<Vector3>(),input2.As<Vector3>(),input3.As<float>())));
+            module.RegisterMethod("SmoothDamp", Types(typeof(Vector3),typeof(Vector3),typeof(Vector3).MakeByRefType(),typeof(float),typeof(float)),(result, input1, input2, input3, input4, input5) => result.SetValue(Vector3.SmoothDamp(input1.As<Vector3>(),input2.As<Vector3>(),ref input3.As<Vector3>(),input4.As<float>(),input5.As<float>())));
+            module.RegisterMethod("SmoothDamp", Types(typeof(Vector3),typeof(Vector3),typeof(Vector3).MakeByRefType(),typeof(float)),(result, input1, input2, input3, input4) => result.SetValue(Vector3.SmoothDamp(input1.As<Vector3>(),input2.As<Vector3>(),ref input3.As<Vector3>(),input4.As<float>())));
+            module.RegisterMethod("get_Item", (result, input1, input2) => result.SetValue(input1.As<Vector3>()[input2.As<int>()]));
+            module.RegisterMethod("set_Item", (input1, input2, input3)  =>  input1.As<Vector3>()[input2.As<int>()]=input3.As<float>());
+            module.RegisterMethod("Set", (input1, input2, input3, input4)  => input1.As<Vector3>().Set(input2.As<float>(),input3.As<float>(),input4.As<float>()));
+            module.RegisterMethod("Scale", Types(typeof(Vector3),typeof(Vector3)),(result, input1, input2) => result.SetValue(Vector3.Scale(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("Scale", Types(typeof(Vector3)),(input1, input2) => input1.As<Vector3>().Scale(input2.As<Vector3>()));
+            module.RegisterMethod("Cross", (result, input1, input2) => result.SetValue(Vector3.Cross(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("GetHashCode", (result, input1) => result.SetValue(input1.As<Vector3>().GetHashCode()));
+            module.RegisterMethod("Equals", Types(typeof(object)),(result, input1, input2) => result.SetValue(input1.As<Vector3>().Equals(input2.As<object>())));
+            module.RegisterMethod("Equals", Types(typeof(Vector3)),(result, input1, input2) => result.SetValue(input1.As<Vector3>().Equals(input2.As<Vector3>())));
+            module.RegisterMethod("Reflect", (result, input1, input2) => result.SetValue(Vector3.Reflect(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("Normalize", Types(typeof(Vector3)),(result, input1) => result.SetValue(Vector3.Normalize(input1.As<Vector3>())));
+            module.RegisterMethod("Normalize", Types(),input1 => input1.As<Vector3>().Normalize());
+            module.RegisterMethod("Dot", (result, input1, input2) => result.SetValue(Vector3.Dot(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("Project", (result, input1, input2) => result.SetValue(Vector3.Project(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("ProjectOnPlane", (result, input1, input2) => result.SetValue(Vector3.ProjectOnPlane(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("Angle", (result, input1, input2) => result.SetValue(Vector3.Angle(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("SignedAngle", (result, input1, input2, input3) => result.SetValue(Vector3.SignedAngle(input1.As<Vector3>(),input2.As<Vector3>(),input3.As<Vector3>())));
+            module.RegisterMethod("Distance", (result, input1, input2) => result.SetValue(Vector3.Distance(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("ClampMagnitude", (result, input1, input2) => result.SetValue(Vector3.ClampMagnitude(input1.As<Vector3>(),input2.As<float>())));
+            module.RegisterMethod("Magnitude", (result, input1) => result.SetValue(Vector3.Magnitude(input1.As<Vector3>())));
+            module.RegisterMethod("SqrMagnitude", (result, input1) => result.SetValue(Vector3.SqrMagnitude(input1.As<Vector3>())));
+            module.RegisterMethod("Min", (result, input1, input2) => result.SetValue(Vector3.Min(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("Max", (result, input1, input2) => result.SetValue(Vector3.Max(input1.As<Vector3>(),input2.As<Vector3>())));
+            module.RegisterMethod("op_Addition", (result, input1, input2) => result.SetValue(input1.As<Vector3>()+input2.As<Vector3>()));
+            module.RegisterMethod("op_Subtraction", (result, input1, input2) => result.SetValue(input1.As<Vector3>()-input2.As<Vector3>()));
+            module.RegisterMethod("op_UnaryNegation", (result, input1) => result.SetValue(-input1.As<Vector3>()));
+            module.RegisterMethod("op_Multiply", Types(typeof(Vector3),typeof(float)),(result, input1, input2) => result.SetValue(input1.As<Vector3>()*input2.As<float>()));
+            module.RegisterMethod("op_Multiply", Types(typeof(float),typeof(Vector3)),(result, input1, input2) => result.SetValue(input1.As<float>()*input2.As<Vector3>()));
+            module.RegisterMethod("op_Division", (result, input1, input2) => result.SetValue(input1.As<Vector3>()/input2.As<float>()));
+            module.RegisterMethod("op_Equality", (result, input1, input2) => result.SetValue(input1.As<Vector3>()==input2.As<Vector3>()));
+            module.RegisterMethod("op_Inequality", (result, input1, input2) => result.SetValue(input1.As<Vector3>()!=input2.As<Vector3>()));
+            module.RegisterMethod("ToString", Types(),(result, input1) => result.SetValue(input1.As<Vector3>().ToString()));
+            module.RegisterMethod("ToString", Types(typeof(string)),(result, input1, input2) => result.SetValue(input1.As<Vector3>().ToString(input2.As<string>())));
+            module.RegisterMethod("ToString", Types(typeof(string),typeof(IFormatProvider)),(result, input1, input2, input3) => result.SetValue(input1.As<Vector3>().ToString(input2.As<string>(),input3.As<IFormatProvider>())));
+            module.ClearTempMembers();
+                          if (baseType != null) module.BaseModule = baseType.GetModule();
+            return module;
+        }
+    }
+}

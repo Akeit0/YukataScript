@@ -1,0 +1,6 @@
+using UnityEngine
+print("Start")
+for i in ..100{
+    await 30.ms()
+    transform.position+=new Vector3(f,0,0)
+}
