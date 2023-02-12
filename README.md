@@ -1,8 +1,9 @@
 # YukataScript
-Script Language for Unity/C#\n
+Script Language for Unity/C#
 
-Same writing style as modern languages.\n
+Same writing style as modern languages.
 But it's in alpha and very buggy.
+I need your help.
 ## Very easy async/await on Editor. 
 ![Async](/Images/YSAsync.gif)
 ## Good Performance.
