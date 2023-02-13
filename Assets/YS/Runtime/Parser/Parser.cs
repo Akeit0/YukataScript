@@ -123,6 +123,7 @@ namespace YS.Parser {
                 case TokenType.IfKeyword:
                     return ParseIfStatement();
                 case TokenType.SemicolonToken:
+                    Advance();
                     return null;
                 case TokenType.Identifier: {
                     return NextTokenType switch {
