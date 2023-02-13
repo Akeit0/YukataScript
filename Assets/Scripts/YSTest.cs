@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using NaughtyAttributes;
 using UnityEngine;
 using UnityEngine.Scripting;
 using YS;
 using YS.Fields;
-using YS.Instructions;
 using YS.VM;
-using YS.Attributes;
 using YS.Generated;
 
 namespace DefaultNamespace {
@@ -80,6 +79,18 @@ namespace DefaultNamespace {
                 _engine.Process();
             }
         }
+        public float f;
+        public Vector3 v3;
+        public int count;
+      [Button]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]//no 4.4689 ms
+        public void RunTest() {
+            var t = transform;
+            using (ElapsedTimeLogger.StartNew()) {
+                
+            }
+            
+        }
 
         public bool DoAsync = false;
         async void RunAsync() {
@@ -113,7 +124,7 @@ namespace DefaultNamespace {
         public void Show() {
             Debug.Log( _compiler.ToCode());
             for (int i = 0; i < _engine.OpCount; i++) {
-                Debug.Log(IInstruction.Instructions[_engine.Codes[i]]);
+                Debug.Log(YS.Instructions.IInstruction.Instructions[_engine.Codes[i]]);
             }
             for (int i = 0; i < _engine.DataCount; i++) {
                 Debug.Log(_engine.UnmanagedData[i]);
