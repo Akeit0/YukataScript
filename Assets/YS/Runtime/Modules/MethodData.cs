@@ -352,7 +352,7 @@ namespace YS.Modules {
                else {
                    var type = defaultValue.GetType();
                    if (type == typeof(bool)) {
-                       array[arrayIndex] =(bool)defaultValue?Constants.True:Constants.False;
+                       array[arrayIndex] = (bool) defaultValue ? Constants.True : Constants.Null;
                        continue;
                    }
                    var box = Variable.New(type);

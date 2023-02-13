@@ -21,10 +21,10 @@ namespace YS.Modules {
             
             module.RegisterMethod(nameof(print), print);
             module.RegisterMethod(nameof(ms),Types(typeof(int),typeof(bool)), (result,input1,input2)=>result.SetValue(input1.As<int>().ms(input2.As<bool>())));
-            module.RegisterMethod(nameof(ms),Types(typeof(float),typeof(bool)), (result,input1)=>result.SetValue(input1.As<float>().ms()));
+            module.RegisterMethod(nameof(ms),Types(typeof(float),typeof(bool)), (result,input1,input2)=>result.SetValue(input1.As<float>().ms(input2.As<bool>())));
             module.RegisterMethod(nameof(s),Types(typeof(int),typeof(bool)), (result,input1,input2)=>result.SetValue(input1.As<int>().s(input2.As<bool>())));
-            module.RegisterMethod(nameof(s),Types(typeof(float),typeof(bool)), (result,input1)=>result.SetValue(input1.As<float>().s()));
-            module.RegisterMethod(nameof(s),Types(typeof(double),typeof(bool)), (result,input1)=>result.SetValue(input1.As<double>().s()));
+            module.RegisterMethod(nameof(s),Types(typeof(float),typeof(bool)), (result,input1,input2)=>result.SetValue(input1.As<float>().s(input2.As<bool>())));
+            module.RegisterMethod(nameof(s),Types(typeof(double),typeof(bool)), (result,input1,input2)=>result.SetValue(input1.As<double>().s(input2.As<bool>())));
             Instance = module;
         }
         public static void Activate(){}

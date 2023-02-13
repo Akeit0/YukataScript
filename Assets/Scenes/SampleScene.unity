@@ -590,18 +590,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Fields:
-  - Name: ok
+  - Name: 
     Variable:
-      rid: 9208754310625886208
-  - Name: f
-    Variable:
-      rid: 9208754310625886209
-  - Name: v3
-    Variable:
-      rid: 9208754310625886210
-  - Name: obj
-    Variable:
-      rid: 9208754310625886211
+      rid: -2
   Json: '{
 
     "ok":{"type":"bool","value":false},
@@ -616,19 +607,5 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 9208754310625886208
-      type: {class: boolVariable, ns: YS.Generated, asm: Assembly-CSharp}
-      data:
-        value: 0
-    - rid: 9208754310625886209
-      type: {class: floatVariable, ns: YS.Generated, asm: Assembly-CSharp}
-      data:
-        value: 7.16
-    - rid: 9208754310625886210
-      type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
-      data:
-        value: {x: 1.54, y: 0.96, z: 0}
-    - rid: 9208754310625886211
-      type: {class: UnityEngine_ObjectVariable, ns: YS.Generated, asm: Assembly-CSharp}
-      data:
-        value: {fileID: 1559958411}
+    - rid: -2
+      type: {class: , ns: , asm: }
