@@ -162,15 +162,15 @@ namespace YS.Editor {
                         _types.Add((typeName.Name, typeName.CodeGenerationType, GetType(typeName.Name)));
                     }
                 }
-                foreach (var type in TypeCache.GetTypesWithAttribute(typeof(Attributes.CodeGenAttribute))) {
+                foreach (var type in TypeCache.GetTypesWithAttribute(typeof(CodeGenAttribute))) {
                     if (type.IsGenericTypeDefinition||_selectedTypesSet.Contains(type)) {
                         continue;
                     }
-                    var attribute = type.GetCustomAttribute<Attributes.CodeGenAttribute>();
+                    var attribute = type.GetCustomAttribute<CodeGenAttribute>();
                     _types.Add((type.Name, attribute.CodeGenerationType, type));
                     
                 }
-                foreach (var field in TypeCache.GetFieldsWithAttribute(typeof(Attributes.CodeGenAttribute))) {
+                foreach (var field in TypeCache.GetFieldsWithAttribute(typeof(CodeGenAttribute))) {
                     if (field.IsStatic) {
                         var value = field.GetValue(null);
                         if (value is null) {
@@ -180,11 +180,11 @@ namespace YS.Editor {
                         if (value is Type ) {
                             var type = (Type) value;
                             if (_selectedTypesSet.Contains(type)) continue;
-                            var attribute = field.GetCustomAttribute<Attributes.CodeGenAttribute>();
+                            var attribute = field.GetCustomAttribute<CodeGenAttribute>();
                             _types.Add((type.Name, attribute.CodeGenerationType, type));
                             
                         }else if (value is List<Type> list) {
-                            var attribute = field.GetCustomAttribute<Attributes.CodeGenAttribute>();
+                            var attribute = field.GetCustomAttribute<CodeGenAttribute>();
                             foreach (var type in list) {
                                 if (_selectedTypesSet.Contains(type)) continue;
                                 _types.Add((type.Name, attribute.CodeGenerationType, type));

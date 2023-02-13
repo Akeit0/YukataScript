@@ -37,7 +37,7 @@ namespace YS.VM {
         public bool IsRunning => State is ProcessState.Await or ProcessState.Stop;
       
         public CancellationTokenSource CancellationTokenSource;
-        private ProcessHandler Handler;
+        ProcessHandler Handler;
         public Exception Exception;
         public Action OnComplete;
 

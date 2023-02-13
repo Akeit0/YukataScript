@@ -12,7 +12,7 @@ namespace YS.Modules {
         static GlobalModule() {
             var module = new TypeModule(typeof(GlobalModule));
 #if UNITY_EDITOR
-            foreach (var methodInfo in UnityEditor.TypeCache.GetMethodsWithAttribute(typeof(Attributes.ReflectionCallAttribute))) {
+            foreach (var methodInfo in UnityEditor.TypeCache.GetMethodsWithAttribute(typeof(ReflectionCallAttribute))) {
                 module.RegisterMethod(methodInfo);
             }
 #else

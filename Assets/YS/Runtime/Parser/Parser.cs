@@ -12,13 +12,13 @@ using YS.Modules;
 using YS.Text;
 namespace YS.Parser {
     public unsafe struct Parser {
-        private TokenInfo CurrentTokenInfo => tokenBuffer[0];
-        private TokenType CurrentTokenType => tokenBuffer->Type;
-        private int CurrentIntValue => tokenBuffer->IntValue;
-        private TokenInfo NextTokenInfo=> tokenBuffer[1];
-        private TokenType NextTokenType => (tokenBuffer + 1)->Type;
+        TokenInfo CurrentTokenInfo => tokenBuffer[0];
+        TokenType CurrentTokenType => tokenBuffer->Type;
+        int CurrentIntValue => tokenBuffer->IntValue;
+        TokenInfo NextTokenInfo=> tokenBuffer[1];
+        TokenType NextTokenType => (tokenBuffer + 1)->Type;
 
-        private int CurrentLine {
+        int CurrentLine {
             get {
                 var ptr = tokenBuffer;
                 while (ptr->Type is not TokenType.EndOfLineToken or TokenType.Invalid) {
@@ -29,18 +29,18 @@ namespace YS.Parser {
             }
         }
 
-        private TokenInfo* tokenBuffer;
-        private TokenInfo* last;
-        private readonly StringSegmentList Names;
-        private readonly SimpleList<ushort> CurrentLines;
+        TokenInfo* tokenBuffer;
+        TokenInfo* last;
+        readonly StringSegmentList Names;
+        readonly SimpleList<ushort> CurrentLines;
 
-        private Precedence CurrentPrecedence => GetPrecedence(CurrentTokenType);
+        Precedence CurrentPrecedence => GetPrecedence(CurrentTokenType);
 
-        private Precedence NextPrecedence => GetPrecedence(NextTokenType);
+        Precedence NextPrecedence => GetPrecedence(NextTokenType);
 
-        private void AddLine() => CurrentLines.Add((ushort)CurrentLine);
+        void AddLine() => CurrentLines.Add((ushort)CurrentLine);
 
-        private Parser(TokenInfo* tokens,int length, StringSegmentList names,SimpleList<ushort> currentLines) {
+        Parser(TokenInfo* tokens,int length, StringSegmentList names,SimpleList<ushort> currentLines) {
             tokenBuffer = tokens;
             last = tokenBuffer + length-1;
             Names = names;
@@ -48,7 +48,7 @@ namespace YS.Parser {
             CurrentLines = currentLines;
         }
 
-        private void Advance() {
+        void Advance() {
             if (IsEof) {
                 throw new Exception("end");
             }
@@ -56,7 +56,7 @@ namespace YS.Parser {
             AdvanceIfEOL();
         }
 
-        private void AdvanceIfEOL() {
+        void AdvanceIfEOL() {
 
             while (CurrentTokenType == TokenType.EndOfLineToken && !IsEof) {
                 ++tokenBuffer;
@@ -82,8 +82,8 @@ namespace YS.Parser {
             }
         }
 
-        private bool IsEof => last<=tokenBuffer;
-        private  void ParseProgramInternal(Root root) {
+        bool IsEof => last<=tokenBuffer;
+         void ParseProgramInternal(Root root) {
             root.Statements.Clear();
             AdvanceIfEOL();
             while (!IsEof) {
@@ -123,6 +123,7 @@ namespace YS.Parser {
                 case TokenType.IfKeyword:
                     return ParseIfStatement();
                 case TokenType.SemicolonToken:
+                    Advance();
                     return null;
                 case TokenType.Identifier: {
                     return NextTokenType switch {
@@ -341,10 +342,18 @@ namespace YS.Parser {
         public IStatement ParseForEachStatement() {
             var statement = new ForEachStatement();
             Advance();
+            var hasOpenParen=false;
+            if (CurrentTokenType == TokenType.OpenParenToken) {
+                hasOpenParen = true;
+                Advance();
+            }
             statement.Current = Names[CurrentIntValue];
             ExpectPeek(TokenType.InKeyword);
             Advance();
             statement.Enumerable = ParseExpression(Precedence.Lowest);
+            if(hasOpenParen){
+                Advance();
+            }
             statement.Consequence = ParseBlockStatement();
             return statement;
         }
@@ -353,11 +362,20 @@ namespace YS.Parser {
             var statement = new IfStatement();
 
             Advance();
+            var hasOpenParen=false;
+            if (CurrentTokenType == TokenType.OpenParenToken) {
+                hasOpenParen = true;
+                Advance();
+            }
             if (CurrentTokenType == TokenType.NotKeyword) {
                 statement.IsNot = true;
                 Advance();
             }
             statement.Condition = ParseExpression(Precedence.Lowest);
+            if(hasOpenParen){
+                Advance();
+            }
+            
             statement.IfBlock = ParseBlockStatement();
            
             
@@ -458,7 +476,7 @@ namespace YS.Parser {
             return args ?? firstArg.Item2;
         }
 
-        private (PassType, IExpression) ParseParameter() {
+        (PassType, IExpression) ParseParameter() {
             var currentType = CurrentTokenType;
             switch (currentType) {
                 case TokenType.RefKeyword or TokenType.InKeyword: {
@@ -504,7 +522,7 @@ namespace YS.Parser {
             return args ?? firstArg.Item2;
         }
 
-        private TypeNamePair GetTypeNamePair() {
+        TypeNamePair GetTypeNamePair() {
             object type;
             if (TokenInfo.IsType(CurrentTokenType)) {
                 type = TokenInfo.ToString(CurrentTokenType);
@@ -648,7 +666,7 @@ namespace YS.Parser {
         return statement;
     }
 
-    private IType ParseType() {
+    IType ParseType() {
         var current = CurrentTokenType;
         if (current is >= TokenType.BoolKeyword and <= TokenType.NuintKeyword) {
             Advance();
@@ -709,7 +727,7 @@ namespace YS.Parser {
             Advance();
             return statement;
         }
-        private bool ExpectPeek(TokenType type) {
+        bool ExpectPeek(TokenType type) {
             while (NextTokenType == TokenType.EndOfLineToken) {
                 ++tokenBuffer;
             }
@@ -722,7 +740,7 @@ namespace YS.Parser {
             throw ParseException.Expect(CurrentLine,type,NextTokenType);
         }
 
-        private bool AssumeCurrentToken(TokenType type) {
+        bool AssumeCurrentToken(TokenType type) {
             if (CurrentTokenType == type) {
                 return true;
             }

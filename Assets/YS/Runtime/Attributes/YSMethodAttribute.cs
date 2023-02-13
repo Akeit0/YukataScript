@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace YS.Attributes {
+namespace YS {
 
     [AttributeUsage(AttributeTargets.Method)]
     public class ReflectionCallAttribute : Attribute {

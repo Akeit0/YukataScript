@@ -15,7 +15,7 @@ namespace YS {
         public  static StringDictionary<Variable> NonGenericDictionary;
 
         protected static TypeKeyAddOnlyDictionary<Variable> dict = new(16);
-        protected Variable() {}
+
         public static Variable New(Type type) {
             if (dict.TryGetValue(type,out var variable)) {
                 return variable.New();
@@ -66,11 +66,11 @@ namespace YS {
 
     public sealed class UnusableMemoryBox : Variable {
 #pragma warning disable CS0414
-        private LongMemory _memory;
+        LongMemory _memory;
 #pragma warning restore CS0414
         
         [StructLayout(LayoutKind.Sequential, Size = 32)]
-        private  struct LongMemory {
+        struct LongMemory {
         }
         public override Type type => null;
 

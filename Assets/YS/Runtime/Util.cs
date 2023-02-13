@@ -157,26 +157,7 @@ namespace YS {
             }
             return null;
         }
-        public static string ToBinaryOperatorName(this TokenType type) {
-            switch (type) {
-                case TokenType.PlusToken: return "op_Addition";
-                case TokenType.MinusToken: return "op_Subtraction";
-                case TokenType.AsteriskToken: return "op_Multiply";
-                case TokenType.SlashToken: return "op_Division";
-                case TokenType.AmpersandToken: return "op_BitwiseAnd";
-                case TokenType.BarToken: return "op_BitwiseOr";
-                case TokenType.CaretEqualsToken: return "op_ExclusiveOr";
-                case TokenType.TildeToken: return "op_OnesComplement";
-                case TokenType.PercentToken: return "op_Modulus";
-                case TokenType.LessThanToken: return "op_LessThan";
-                case TokenType.GreaterThanToken: return "op_GreaterThan";
-                case TokenType.LessThanEqualsToken: return "op_LessThanOrEqual";
-                case TokenType.GreaterThanEqualsToken: return "op_GreaterThanOrEqual";
-                case TokenType.LessThanLessThanToken: return "op_LeftShift";
-                case TokenType.GreaterThanGreaterThanToken: return "op_RightShift";
-            }
-            return null;
-        }
+        
         public static TokenType ToBinaryOperator(this TokenType type) {
             switch (type) {
                 case TokenType.PlusEqualsToken: return TokenType.PlusToken;
@@ -198,7 +179,7 @@ namespace YS {
                 case TokenType.AmpersandToken: return BinaryOpType.BitwiseAnd;
                 case TokenType.BarToken: return BinaryOpType.BitwiseOr;
                 case TokenType.PercentToken: return BinaryOpType.Modulus;
-                case TokenType.EqualsToken: return BinaryOpType.Equal;
+                case TokenType.EqualsEqualsToken: return BinaryOpType.Equal;
                 case TokenType.ExclamationEqualsToken: return BinaryOpType.Inequal;
                 case TokenType.LessThanToken: return BinaryOpType.LessThan;
                 case TokenType.GreaterThanToken: return BinaryOpType.GreaterThan;
@@ -229,30 +210,7 @@ namespace YS {
             ("op_LeftShift".GetExHashCode(),"op_LeftShift"),
             ("op_RightShift".GetExHashCode(),"op_RightShift"),
         };
-        public static MethodData GetAppropriateFunction(object o,Span<Type> span) {
-            if (o is MethodData MethodData) {
-                if (MethodData.IsAppropriate(span)) return MethodData;
-                return null;
-            }
-            if (o is List<MethodData> list) {
-                foreach (var function in list) {
-                    if (function.IsAppropriate(span)) {
-                        return function;
-                    }
-                }
-            }
-            return null;
-        }
- 
-        
-        public static IntRange range(int start, int end) => new IntRange(start, end);
-        public static IntRange range(int end) => new IntRange(0, end);
-        public static StepIntRange range(int start, int end,int step) => new StepIntRange(start, end,step);
-        
-   
-        public static TimeSpan ms(this double ms)=>TimeSpan.FromMilliseconds(ms);
-        public static TimeSpan ms(this int ms)=>TimeSpan.FromMilliseconds(ms);
-        public static TimeSpan s(this double s)=>TimeSpan.FromSeconds(s);
-        public static TimeSpan s(this int s)=>TimeSpan.FromSeconds(s);
+       
+      
     }
 }

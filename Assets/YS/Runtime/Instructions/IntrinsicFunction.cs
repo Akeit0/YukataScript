@@ -116,12 +116,39 @@ namespace YS.Instructions {
         }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
+            ArithmeticToCode(vm, builder, ref indentLevel);
+        }
+        public static void ArithmeticToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder,indentLevel);
-            vm.ReadUshort();
+            var type= vm.ReadUshort();
             IInstruction.AppendVariable(builder, vm);
             builder.Append(" = ");
             IInstruction.AppendVariable(builder, vm);
-            builder.Append(" + ");
+            switch (type) {
+                case 0:builder.Append(" + ");
+                    break;
+                case 1:builder.Append(" - ");
+                    break;
+                case 2:builder.Append(" * ");
+                    break;
+                case 3:builder.Append(" / ");
+                    break;
+                case 4:builder.Append(" % ");
+                    break;
+                case 5:builder.Append(" == ");
+                    break;
+                case 6:builder.Append(" != ");
+                    break;
+                case 7:builder.Append(" < ");
+                    break;
+                case 8:builder.Append(" > ");
+                    break;
+                case 9:builder.Append(" <= ");
+                    break;
+                case 10:builder.Append(" >= ");
+                    break;
+            }
+            
             IInstruction.AppendVariable(builder, vm);
         }
     }
@@ -151,13 +178,7 @@ namespace YS.Instructions {
         }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
-            IInstruction.AppendIndent(builder, indentLevel);
-            vm.ReadUshort();
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" = ");
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" + ");
-            IInstruction.AppendVariable(builder, vm);
+            IntArithmeticOp.ArithmeticToCode(vm, builder, ref indentLevel);
         }
     }
 
@@ -185,13 +206,7 @@ namespace YS.Instructions {
         }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
-            IInstruction.AppendIndent(builder,indentLevel);
-            vm.ReadUshort();
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" = ");
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" + ");
-            IInstruction.AppendVariable(builder, vm);
+            IntArithmeticOp.ArithmeticToCode(vm, builder, ref indentLevel);
         }
     }
     public sealed class FloatArithmeticOp : IInstruction {
@@ -218,13 +233,7 @@ namespace YS.Instructions {
         }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
-            IInstruction.AppendIndent(builder,indentLevel);
-            vm.ReadUshort();
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" = ");
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" + ");
-            IInstruction.AppendVariable(builder, vm);
+            IntArithmeticOp.ArithmeticToCode(vm, builder, ref indentLevel);
         }
     }
     public sealed class DoubleArithmeticOp : IInstruction {
@@ -251,13 +260,7 @@ namespace YS.Instructions {
         }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
-            IInstruction.AppendIndent(builder,indentLevel);
-            vm.ReadUshort();
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" = ");
-            IInstruction.AppendVariable(builder, vm);
-            builder.Append(" + ");
-            IInstruction.AppendVariable(builder, vm);
+            IntArithmeticOp.ArithmeticToCode(vm, builder, ref indentLevel);
         }
     }
 
