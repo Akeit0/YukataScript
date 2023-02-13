@@ -79,19 +79,7 @@ namespace DefaultNamespace {
                 _engine.Process();
             }
         }
-        public float f;
-        public Vector3 v3;
-        public int count;
-      [Button]
-      [MethodImpl(MethodImplOptions.AggressiveInlining)]//no 4.4689 ms
-        public void RunTest() {
-            var t = transform;
-            using (ElapsedTimeLogger.StartNew()) {
-                
-            }
-            
-        }
-
+        
         public bool DoAsync = false;
         async void RunAsync() {
             try {
