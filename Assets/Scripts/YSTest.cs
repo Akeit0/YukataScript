@@ -61,10 +61,10 @@ namespace DefaultNamespace {
             catch (Exception e) {
                Debug.LogException(e);
             }
-         
         }
         [Button]
         public void Run() {
+          
             if (DoAsync) {
                 RunAsync();
                 return;
@@ -104,6 +104,7 @@ namespace DefaultNamespace {
         public void Restart() {
              _engine.Restart();
         }
+
         
  
         StringBuilder _builder = new StringBuilder(100);

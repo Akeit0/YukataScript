@@ -66,6 +66,10 @@ namespace YS.VM {
             Engine.CodeToLine.Add(GetCurrentLine());
             Engine.Emit(opCode);
         }
+        public void EmitMethod(MethodID id) {
+            Engine.CodeToLine.Add(GetCurrentLine());
+            Engine.Emit(id);
+        }
     
         public unsafe void EmitIntData(int data){
             var d = data;

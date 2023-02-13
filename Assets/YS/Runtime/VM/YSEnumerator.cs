@@ -26,6 +26,7 @@ namespace YS.VM {
         public IEnumeratorSource Source;
 
         public bool MoveNext() {
+            if (Source is null) return true;
             return Source.MoveNext(ref this);
         }
         public void Reset() => Source.Reset(ref this);

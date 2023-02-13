@@ -57,11 +57,20 @@ namespace YS.VM {
            
                 var enumerator = data.Enumerator;
                 ExecuteUntil(end);
-                if (State == ProcessState.Await) {
-                    RestartForEachDataList.Add(new RestartForEachData(enumerator,start,startPtr,this));
-                   
-                    current = (ushort)Codes.Length;
-                    return;
+                switch (State) {
+                    case ProcessState.Continue:
+                        State = ProcessState.Next;
+                        break;
+                    case ProcessState.Return:
+                        return;
+                    case ProcessState.Break:
+                        State = ProcessState.Next;
+                        goto endloop;
+                    case ProcessState.Await: {
+                        RestartForEachDataList.Add(new RestartForEachData(enumerator,start,startPtr,this));
+                        current = (ushort)Codes.Length;
+                        return;
+                    }
                 }
                 while (enumerator.MoveNext()) {
                     current = start;

@@ -122,6 +122,9 @@ namespace YS.Parser {
                     return ParseAsyncStatement();
                 case TokenType.IfKeyword:
                     return ParseIfStatement();
+                case TokenType.WhileKeyword:
+                    return ParseWhileStatement();
+                
                 case TokenType.SemicolonToken:
                     Advance();
                     return null;
@@ -388,6 +391,29 @@ namespace YS.Parser {
                 statement.ElseBlock = ParseBlockStatement();
             }
 
+            return statement;
+        }
+
+        public IStatement ParseWhileStatement() {
+            var statement = new WhileStatement();
+
+            Advance();
+            var hasOpenParen=false;
+            if (CurrentTokenType == TokenType.OpenParenToken) {
+                hasOpenParen = true;
+                Advance();
+            }
+            if (CurrentTokenType == TokenType.NotKeyword) {
+                statement.IsNot = true;
+                Advance();
+            }
+            statement.Condition = ParseExpression(Precedence.Lowest);
+            if(hasOpenParen){
+                Advance();
+            }
+            
+            statement.Block = ParseBlockStatement();
+           
             return statement;
         }
 

@@ -167,53 +167,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba27cbf03b404bcba3a3999823aeccbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  code: "var ok = true\r\nisZero := 1 + 1 == 0;\r\nif  ok || isZero{\r\n\tprint(\"a\")\r\n}\r\nif 
-    (not isZero){\r\n\tprint(\"b\")\r\n}"
+  code: "var timer=new YS.Timer(duration)\nwhile not timer.IsEnd {\n\tawait 16.ms()\n\tvar
+    current=timer.GetEasedElapsedRatio(easingType)\n\ttransform.localScale=end *
+    current\n}\ntimer=new YS.Timer(duration)\nwhile not timer.IsEnd {\n\tawait 16.ms()\n\tvar
+    current=1f-timer.GetCurvedElapsedRatio(curve)\n\ttransform.localScale=end * current\n}\ntransform.localScale=default"
   TextFile: {fileID: 0}
   DoPerformanceCheck: 0
   Fields:
+  - Name: duration
+    Variable:
+      rid: 9208754327671799811
   - Name: transform
     Variable:
       rid: 9208754304739966981
-  - Name: v3
+  - Name: end
     Variable:
-      rid: 9208754293580234753
-  - Name: f
+      rid: 9208754327671799810
+  - Name: easingType
     Variable:
-      rid: 9208754304739966982
-  - Name: txt
+      rid: 9208754327671799812
+  - Name: curve
     Variable:
-      rid: 9208754304739966987
-  - Name: ok
-    Variable:
-      rid: 9208754327671799808
-  f: 1
-  v3: {x: 0.002, y: 0, z: 0}
-  count: 1000
+      rid: 9208754327671799809
   DoAsync: 0
   references:
     version: 2
     RefIds:
-    - rid: 9208754293580234753
-      type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
-      data:
-        value: {x: 0.001, y: 0, z: 0}
     - rid: 9208754304739966981
       type: {class: UnityEngine_TransformVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
         value: {fileID: 496487399}
-    - rid: 9208754304739966982
+    - rid: 9208754327671799809
+      type: {class: UnityEngine_AnimationCurveVariable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 2
+            outSlope: 2
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+    - rid: 9208754327671799810
+      type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: {x: 5, y: 5, z: 1}
+    - rid: 9208754327671799811
       type: {class: floatVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: 3
-    - rid: 9208754304739966987
-      type: {class: stringVariable, ns: YS.Generated, asm: Assembly-CSharp}
+        value: 2
+    - rid: 9208754327671799812
+      type: {class: YS_EasingTypeVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: Start
-    - rid: 9208754327671799808
-      type: {class: boolVariable, ns: YS.Generated, asm: Assembly-CSharp}
-      data:
-        value: 1
+        value: 28
 --- !u!1 &496487396
 GameObject:
   m_ObjectHideFlags: 0
@@ -290,8 +312,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 496487396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.9999576, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

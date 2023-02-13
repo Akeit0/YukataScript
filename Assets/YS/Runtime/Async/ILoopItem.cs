@@ -59,7 +59,47 @@ namespace YS.Async {
 
         public void SetTrue() => t = true;
     }
-    
+
+    public class AnimationCurveSync:ILoopItem, IPoolNode<AnimationCurveSync> {
+        static Pool<AnimationCurveSync> _pool;
+        public ref AnimationCurveSync NextNode => ref _next;
+        AnimationCurveSync _next;
+        AnimationCurve _animationCurve;
+        public float StartTime;
+        public float Duration;
+        Variable<float> _variable;
+        public static AnimationCurveSync Create(Variable<float> variable,AnimationCurve animationCurve,float duration) {
+            if (!_pool.TryPop(out var item)) return new AnimationCurveSync(variable,animationCurve,duration);
+            item._variable = variable;
+            item._animationCurve=animationCurve;
+            item.StartTime=Time.time;
+            item.Duration=duration;
+            return item;
+        }
+        public void AddToLoop() {
+            YukataPlayerLoop.AddAction(this);
+        }
+        AnimationCurveSync(Variable<float> variable,AnimationCurve animationCurve,float duration) {
+            _variable = variable;
+           _animationCurve=animationCurve;
+           StartTime=Time.time;
+           Duration=duration;
+        }
+        public  bool MoveNext() {
+            if(_animationCurve==null) {
+                _pool.TryPush(this);
+                return false;
+            }
+            var progress = (Time.time - StartTime) / Duration;
+            if (1 < progress) {
+                _variable.value = _animationCurve.Evaluate(1);
+                _pool.TryPush(this);
+                return false;
+            }
+            _variable.value = _animationCurve.Evaluate(progress);
+            return true;
+        }
+    }
     public class WaitRealTime : Awaitable,IPoolNode<WaitRealTime> {
         static Pool<WaitRealTime> _pool;
         public ref WaitRealTime NextNode => ref _next;

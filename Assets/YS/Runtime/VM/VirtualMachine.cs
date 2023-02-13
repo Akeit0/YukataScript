@@ -6,6 +6,7 @@ using UnityEngine;
 using YS.Async;
 using YS.Collections;
 using YS.Instructions;
+using YS.Modules;
 
 namespace YS.VM {
     
@@ -234,9 +235,6 @@ namespace YS.VM {
             DataCount = 0;
             return true;
         }
-        public void Clear() {
-           
-        }
         public void Emit(byte opId) {
              if(Codes.Length==OpCount) {
                  Array.Resize(ref Codes,OpCount*2);
@@ -252,6 +250,8 @@ namespace YS.VM {
                  Array.Resize(ref UnmanagedData,DataCount*2);
              }
              UnmanagedData[DataCount++] = data;
+        }public void Emit(MethodID id) {
+            Emit(id.Index, id.InstructionId);
         }
         public  void EmitData<T>(T data)where T:unmanaged {
             var d = data;

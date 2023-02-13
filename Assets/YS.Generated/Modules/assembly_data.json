@@ -1,6 +1,7 @@
 {
     "value": [
         "mscorlib",
-        "UnityEngine.CoreModule"
+        "UnityEngine.CoreModule",
+        "YS.Runtime"
     ]
 }

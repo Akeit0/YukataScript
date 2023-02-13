@@ -97,6 +97,8 @@ namespace YS.Modules {
         public readonly Type ReturnType;
         public readonly ushort Index;
         public readonly byte InstructionId;
+
+        public MethodID ID => new MethodID(Index, InstructionId);
        public  int DefaultValueCount => DefaultValues?.Length ?? 0;
        public  int ParameterCount => ParamData?.Length ?? 0;
        public bool HasReturnValue => ReturnType is not  null;
