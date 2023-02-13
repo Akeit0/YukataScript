@@ -61,6 +61,14 @@ namespace YS.VM {
           item.AddToLoop(engine);
           engine.SetAsyncState();
         }
+    }public class UniTimeAwaitSource : IAwaiterSource {
+        public Type ResultType => null;
+        public bool UseCustomLoop => false;
+        public void Run(Variable srcVariable, Variable resultVariable, VirtualMachine engine) {
+          var item=  WaitUniTime.Create(srcVariable.As<UniTime>());
+          item.AddToLoop(engine);
+          engine.SetAsyncState();
+        }
     }
      public class EnumeratorSource : IAwaiterSource {
         public Type ResultType => null;

@@ -167,10 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba27cbf03b404bcba3a3999823aeccbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  code: "var timer=new YS.Timer(duration)\nwhile not timer.IsEnd {\n\tawait 16.ms()\n\tvar
-    current=timer.GetEasedElapsedRatio(easingType)\n\ttransform.localScale=end *
-    current\n}\ntimer=new YS.Timer(duration)\nwhile not timer.IsEnd {\n\tawait 16.ms()\n\tvar
-    current=1f-timer.GetCurvedElapsedRatio(curve)\n\ttransform.localScale=end * current\n}\ntransform.localScale=default"
+  code: "using UnityEngine\nusing YS\nvar timer=new Timer(duration)\nwhile not timer.IsExpired
+    {\n\tawait 16.ms()\n\ttransform.position=v3*timer.GetEasedElapsedRatio(easingType)\n}\ntimer=new
+    Timer(duration)\nwhile not timer.IsExpired {\n\tawait 16.ms()\n\ttransform.position=v3*timer.GetEasedRemainRatio(easingType)\n}"
   TextFile: {fileID: 0}
   DoPerformanceCheck: 0
   Fields:
@@ -180,7 +179,7 @@ MonoBehaviour:
   - Name: transform
     Variable:
       rid: 9208754304739966981
-  - Name: end
+  - Name: v3
     Variable:
       rid: 9208754327671799810
   - Name: easingType
@@ -189,7 +188,7 @@ MonoBehaviour:
   - Name: curve
     Variable:
       rid: 9208754327671799809
-  DoAsync: 0
+  DoAsync: 1
   references:
     version: 2
     RefIds:
@@ -213,10 +212,46 @@ MonoBehaviour:
             inWeight: 0
             outWeight: 0
           - serializedVersion: 3
+            time: 0.18682344
+            value: 0.37309253
+            inSlope: 1.3271183
+            outSlope: 1.3271183
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.40394548
+            value: 0.44862723
+            inSlope: 0.45184746
+            outSlope: 0.45184746
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.57644904
+            value: 0.63029844
+            inSlope: 0.36843315
+            outSlope: 0.36843315
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.35005257
+          - serializedVersion: 3
+            time: 0.7948015
+            value: 0.6931925
+            inSlope: 0.90880895
+            outSlope: 0.90880895
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
             time: 1
             value: 1
-            inSlope: 2
-            outSlope: 2
+            inSlope: 0
+            outSlope: 0
             tangentMode: 0
             weightedMode: 0
             inWeight: 0
@@ -227,7 +262,7 @@ MonoBehaviour:
     - rid: 9208754327671799810
       type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: {x: 5, y: 5, z: 1}
+        value: {x: 5, y: 5, z: 0}
     - rid: 9208754327671799811
       type: {class: floatVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
@@ -235,7 +270,7 @@ MonoBehaviour:
     - rid: 9208754327671799812
       type: {class: YS_EasingTypeVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: 28
+        value: 20
 --- !u!1 &496487396
 GameObject:
   m_ObjectHideFlags: 0
@@ -313,7 +348,7 @@ Transform:
   m_GameObject: {fileID: 496487396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

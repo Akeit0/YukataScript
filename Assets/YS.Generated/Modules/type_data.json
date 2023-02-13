@@ -71,6 +71,10 @@
         {
             "Name": "YS.EasingType",
             "CodeGenerationType": 1
+        },
+        {
+            "Name": "UnityEngine.Time",
+            "CodeGenerationType": 0
         }
     ]
 }

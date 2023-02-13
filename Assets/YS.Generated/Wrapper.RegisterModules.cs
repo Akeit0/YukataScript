@@ -14,6 +14,7 @@ namespace YS.Generated {
              Register(new Variable<UnityEngine.Color>(),()=>Create_UnityEngine_ColorModule());
              Register(new Variable<UnityEngine.AnimationCurve>(),()=>Create_UnityEngine_AnimationCurveModule());
              Register(new Variable<YS.Timer>(),()=>Create_YS_TimerModule());
+             Register(new Variable<UnityEngine.Time>(),()=>Create_UnityEngine_TimeModule());
         }
     }
 }

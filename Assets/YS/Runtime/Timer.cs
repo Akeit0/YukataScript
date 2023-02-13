@@ -1,38 +1,32 @@
 ﻿using System;
 using UnityEngine;
-
+using static YS.UniTime;
 namespace YS {
     public readonly struct Timer {
-        public Timer(float duration) {
-           StartTime = CurrentTime;
+        public Timer(float duration,bool ignoreScale=false) {
+            IgnoreScale = ignoreScale;
+           StartTime = CurrentTime(ignoreScale);
            TargetTime = StartTime + duration;
         }
-#if UNITY_EDITOR
-        static long _firstTick;
-#endif
-        static double CurrentTime {
-            get {
-#if UNITY_EDITOR
-                if (!Application.isPlaying) {
-                    if (_firstTick == 0) {
-                        _firstTick= System.Diagnostics.Stopwatch.GetTimestamp();
-                    }
-                    return (new System.TimeSpan(System.Diagnostics.Stopwatch.GetTimestamp()-_firstTick).TotalSeconds);
-                }
-#endif
-                return Time.timeAsDouble;
-            }
+        public Timer(UniTime time) {
+            IgnoreScale = time.IgnoreScale;
+           StartTime = CurrentTime(IgnoreScale);
+           TargetTime = StartTime + time.Seconds;
         }
-        public bool IsExpired => TargetTime< CurrentTime;
+
+        
+        public bool IsExpired => TargetTime< CurrentTime(IgnoreScale);
         public readonly double StartTime;
         public readonly double TargetTime;
-        public float Elapsed =>(float) Math.Min(TargetTime, (CurrentTime - StartTime));
+        public readonly bool IgnoreScale;
+        public float Elapsed =>(float) Math.Min(TargetTime, (CurrentTime(IgnoreScale) - StartTime));
 
         public float GetEasedElapsedRatio(EasingType easingType) => Easing.Ease(ElapsedRatio, easingType);
         public float GetCurvedElapsedRatio(AnimationCurve animationCurve) => animationCurve.Evaluate(ElapsedRatio);
-        public float ElapsedRatio => (float)Math.Min(1, ((CurrentTime - StartTime) / (TargetTime - StartTime))) ;
-        public float Remain =>(float) Math.Max(0,(TargetTime - CurrentTime));
-        public float RemainRatio  => (float) Math.Max(0,((TargetTime - CurrentTime) / (TargetTime - StartTime))) ;
-        
+        public float ElapsedRatio => (float)Math.Min(1, ((CurrentTime(IgnoreScale) - StartTime) / (TargetTime - StartTime))) ;
+        public float Remain =>(float) Math.Max(0,(TargetTime - CurrentTime(IgnoreScale)));
+        public float RemainRatio  => (float) Math.Max(0,((TargetTime - CurrentTime(IgnoreScale)) / (TargetTime - StartTime))) ;
+        public float GetEasedRemainRatio(EasingType easingType) => Easing.Ease(RemainRatio, easingType);
+        public float GetCurvedRemainRatio(AnimationCurve animationCurve) => animationCurve.Evaluate(RemainRatio);
     }
 }

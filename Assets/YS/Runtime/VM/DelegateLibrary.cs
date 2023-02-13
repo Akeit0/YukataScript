@@ -14,12 +14,12 @@ namespace YS.VM {
     public static class DelegateLibrary {
 
         public static Dictionary<Type, ushort> AwaiterIdDictionary=new (){
-            {typeof(TimeSpan), 0},
+            {typeof(UniTime), 0},
             {typeof(IEnumerator), 1},
         };
 
         public static  List<IAwaiterSource> Awaiters = 
-         new()   {new TimeSpanSource(),new EnumeratorSource()
+         new()   {new UniTimeAwaitSource(),new EnumeratorSource()
              
          };
         
