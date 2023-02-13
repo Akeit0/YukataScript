@@ -1,4 +1,5 @@
 # YukataScript
+dev branch is the newest.
 Script Language for Unity/C#
 
 Same writing style as modern languages.
