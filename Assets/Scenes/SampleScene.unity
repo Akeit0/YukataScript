@@ -167,11 +167,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba27cbf03b404bcba3a3999823aeccbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  code: "using UnityEngine\nusing YS\nvar timer=new Timer(duration)\nwhile not timer.IsExpired
-    {\n\tawait 16.ms()\n\ttransform.position=v3*timer.GetEasedElapsedRatio(easingType)\n}\ntimer=new
-    Timer(duration)\nwhile not timer.IsExpired {\n\tawait 16.ms()\n\ttransform.position=v3*timer.GetEasedRemainRatio(easingType)\n}"
+  code: "var timer=new YS.Timer(duration)\r\nwhile not timer.IsExpired {\r\n\tawait
+    16.ms()\r\n\t current :=timer.GetEasedElapsedRatio(easingType)\r\n\ttransform.localScale=v3
+    * current\r\n}\r\ntimer=new YS.Timer(duration)\r\nwhile not timer.IsExpired {\r\n\tawait
+    16.ms()\r\n\t current :=timer.GetCurvedRemainRatio(curve)\r\n\ttransform.localScale=v3
+    * current\r\n}\r"
   TextFile: {fileID: 0}
-  DoPerformanceCheck: 0
+  DoPerformanceCheck: 1
   Fields:
   - Name: duration
     Variable:
@@ -188,7 +190,7 @@ MonoBehaviour:
   - Name: curve
     Variable:
       rid: 9208754327671799809
-  DoAsync: 1
+  DoAsync: 0
   references:
     version: 2
     RefIds:
@@ -262,7 +264,7 @@ MonoBehaviour:
     - rid: 9208754327671799810
       type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: {x: 5, y: 5, z: 0}
+        value: {x: 5, y: 5, z: 1}
     - rid: 9208754327671799811
       type: {class: floatVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
@@ -270,7 +272,7 @@ MonoBehaviour:
     - rid: 9208754327671799812
       type: {class: YS_EasingTypeVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: 20
+        value: 25
 --- !u!1 &496487396
 GameObject:
   m_ObjectHideFlags: 0
@@ -348,7 +350,7 @@ Transform:
   m_GameObject: {fileID: 496487396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -590,9 +592,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Fields:
-  - Name: 
+  - Name: ok
     Variable:
-      rid: -2
+      rid: 9208754338373828608
+  - Name: f
+    Variable:
+      rid: 9208754338373828609
+  - Name: v3
+    Variable:
+      rid: 9208754338373828610
+  - Name: obj
+    Variable:
+      rid: 9208754338373828611
   Json: '{
 
     "ok":{"type":"bool","value":false},
@@ -607,5 +618,19 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
+    - rid: 9208754338373828608
+      type: {class: boolVariable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: 0
+    - rid: 9208754338373828609
+      type: {class: floatVariable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: 7.16
+    - rid: 9208754338373828610
+      type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: {x: 1.54, y: 0.96, z: 0}
+    - rid: 9208754338373828611
+      type: {class: UnityEngine_ObjectVariable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: {fileID: 496487396}
