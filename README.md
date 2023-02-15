@@ -2,7 +2,13 @@
 dev branch is the newest.
 Script Language for Unity/C#
 
-Same writing style as modern languages.
+No more allocations(including boxing) and typechecks than C# at run time.
+
+Theoretically all types and methods can be used except ByReflike(such as Span\<T\>).
+
+The writing style is a mixture of C# and go lang.
+
+
 But it's in alpha and very buggy.
 I need your help.
 ## Very easy async/await on Editor. 
