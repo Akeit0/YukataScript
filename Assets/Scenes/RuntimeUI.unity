@@ -265,7 +265,7 @@ MonoBehaviour:
     (not isZero){\r\n    print(\"b\")\r\n}"
   Example2: "for i in 1..10{\r\n    if( i<3){\r\n        continue;\r\n    }\r\n   
     if i==7{\r\n        break;\r\n    }\r\n    else{\r\n        print(i)\r\n    }\r\n}"
-  Example3: "using UnityEngine\r\nfor i in ..100000{\r\n    v3+=new Vector3(f,1,1)\r\n}"
+  Example3: "using UnityEngine\r\nfor i in ..100000{\r\n    v3+=new Vector3(1,1,1)\r\n}"
   Example4: "using YS\nusing UnityEngine\nspriteRenderer.color=Color.cyan\nvar timer=new
     Timer(duration)\r\nwhile not timer.IsExpired {\r\n\tawait 16.ms()\r\n\tvar current=timer.GetEasedRemainRatio(easingType)\r\n\ttransform.localScale=v3
     * current\r\n}\r\nvar timer=new YS.Timer(duration)\r\nwhile not timer.IsExpired
