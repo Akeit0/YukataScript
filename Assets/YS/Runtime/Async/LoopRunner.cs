@@ -23,15 +23,13 @@ namespace YS.Async {
 #endif
         }
 #if UNITY_EDITOR
-        static double waitTime = 0;
+       
         void EditUpdate() {
-            if (UnityEditor.EditorApplication.timeSinceStartup - waitTime >= 0.01666f )
-            {
-                Run();
-                UnityEditor.SceneView.RepaintAll();
-                waitTime = UnityEditor.EditorApplication.timeSinceStartup;
+           if(0<Current.Count) {
+               Run();
+               UnityEditor.SceneView.RepaintAll();
+           }
               
-            }
           
         }
 #endif

@@ -15,5 +15,7 @@ namespace YS.Generated {
     public class UnityEngine_ColorVariable:Variable<UnityEngine.Color>{}
     public class UnityEngine_AnimationCurveVariable:Variable<UnityEngine.AnimationCurve>{}
     public class YS_EasingTypeVariable:Variable<YS.EasingType>{}
+    public class UnityEngine_SpriteRendererVariable:Variable<UnityEngine.SpriteRenderer>{}
+    public class UnityEngine_RendererVariable:Variable<UnityEngine.Renderer>{}
 
 }

@@ -70,11 +70,19 @@
         },
         {
             "Name": "YS.EasingType",
-            "CodeGenerationType": 1
+            "CodeGenerationType": 2
         },
         {
             "Name": "UnityEngine.Time",
             "CodeGenerationType": 0
+        },
+        {
+            "Name": "UnityEngine.SpriteRenderer",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Renderer",
+            "CodeGenerationType": 2
         }
     ]
 }

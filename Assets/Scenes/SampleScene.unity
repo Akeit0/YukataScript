@@ -167,10 +167,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba27cbf03b404bcba3a3999823aeccbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  code: "var timer=new YS.Timer(duration)\r\nwhile not timer.IsExpired {\r\n\tawait
-    16.ms()\r\n\t current :=timer.GetEasedElapsedRatio(easingType)\r\n\ttransform.localScale=v3
-    * current\r\n}\r\ntimer=new YS.Timer(duration)\r\nwhile not timer.IsExpired {\r\n\tawait
-    16.ms()\r\n\t current :=timer.GetCurvedRemainRatio(curve)\r\n\ttransform.localScale=v3
+  code: "print(color)\nprint(color*0.5f)\nvar timer=new YS.Timer(duration)\r\nwhile
+    not timer.IsExpired {\r\n\tawait 16.ms()\r\n\tvar current=timer.GetEasedRemainRatio(easingType)\r\n\ttransform.localScale=v3
+    * current\r\n}\r\nvar timer=new YS.Timer(duration)\r\nwhile not timer.IsExpired
+    {\r\n\tawait 16.ms()\r\n\tvar current=timer.GetEasedElapsedRatio(easingType)\r\n\n\ttransform.localScale=v3
     * current\r\n}\r"
   TextFile: {fileID: 0}
   DoPerformanceCheck: 1
@@ -190,6 +190,9 @@ MonoBehaviour:
   - Name: curve
     Variable:
       rid: 9208754327671799809
+  - Name: color
+    Variable:
+      rid: 9208754449636917248
   DoAsync: 0
   references:
     version: 2
@@ -273,6 +276,10 @@ MonoBehaviour:
       type: {class: YS_EasingTypeVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
         value: 25
+    - rid: 9208754449636917248
+      type: {class: UnityEngine_ColorVariable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: {r: 1, g: 0, b: 1, a: 0.3112157}
 --- !u!1 &496487396
 GameObject:
   m_ObjectHideFlags: 0

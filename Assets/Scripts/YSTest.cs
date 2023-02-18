@@ -123,8 +123,6 @@ namespace DefaultNamespace {
             _builder.Clear();
           _engine.ToCode(_builder);
           Debug.Log(_builder.ToString());
-          
-          
         }
        
     }

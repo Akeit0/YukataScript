@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/YS.UI/inputfield.uss?fileID=7433441132597879392&amp;guid=ece1562abd48ebf4598b0389d5809c36&amp;type=3#inputfield" />
+    <ui:ScrollView usage-hints="DynamicTransform" style="width: 50%; padding-bottom: 10%; margin-bottom: 0;">
+        <ui:TextField picking-mode="Ignore" text="&#10;" multiline="true" />
+        <ui:VisualElement name="Variables" />
+    </ui:ScrollView>
+</ui:UXML>

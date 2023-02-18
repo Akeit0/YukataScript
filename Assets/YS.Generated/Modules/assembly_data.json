@@ -2,6 +2,7 @@
     "value": [
         "mscorlib",
         "UnityEngine.CoreModule",
-        "YS.Runtime"
+        "YS.Runtime",
+        "UnityEngine.UI"
     ]
 }
