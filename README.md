@@ -33,4 +33,8 @@ I need your help.
 - funcions and classes
 - Generics (Manual setting may solve it.)
 - Await with return value 
+<<<<<<< HEAD
 - Primitive Types  without int, float,double,char,string 
+=======
+- Primitive Types  without int, float,double,char,string 
+>>>>>>> af4f4320699c70500d68c9e9a70677a1e6af05f8
