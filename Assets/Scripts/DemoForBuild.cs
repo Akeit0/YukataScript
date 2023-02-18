@@ -90,6 +90,10 @@ namespace DefaultNamespace {
             if (Input.GetKeyDown(KeyCode.F12)||Input.GetKeyDown(KeyCode.Escape)) {
                 _root.visible = !_root.visible;
             }
+
+            foreach (var field in _selectableFields) {
+                field.Field.Validate();
+            }
         }
         public void Compile(string code) {
             YS.Generated.Wrapper.Init();
