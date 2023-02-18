@@ -97,6 +97,8 @@ namespace YS.Modules {
         public readonly Type ReturnType;
         public readonly ushort Index;
         public readonly byte InstructionId;
+
+        public MethodID ID => new MethodID(Index, InstructionId);
        public  int DefaultValueCount => DefaultValues?.Length ?? 0;
        public  int ParameterCount => ParamData?.Length ?? 0;
        public bool HasReturnValue => ReturnType is not  null;
@@ -350,7 +352,7 @@ namespace YS.Modules {
                else {
                    var type = defaultValue.GetType();
                    if (type == typeof(bool)) {
-                       array[arrayIndex] =(bool)defaultValue?Constants.True:Constants.False;
+                       array[arrayIndex] = (bool) defaultValue ? Constants.True : Constants.Null;
                        continue;
                    }
                    var box = Variable.New(type);

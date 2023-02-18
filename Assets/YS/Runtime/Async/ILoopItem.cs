@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
-using UnityEngine;
 using YS.Collections;
 using YS.VM;
-using Debug = UnityEngine.Debug;
 
 namespace YS.Async {
     public interface ILoopItem {
@@ -59,6 +57,8 @@ namespace YS.Async {
 
         public void SetTrue() => t = true;
     }
+
+   
     
     public class WaitRealTime : Awaitable,IPoolNode<WaitRealTime> {
         static Pool<WaitRealTime> _pool;
@@ -80,6 +80,60 @@ namespace YS.Async {
                 return false;
             }
             if (Stopwatch.GetTimestamp() < ticks) {
+                return true;
+            }
+            _pool.TryPush(this);
+            _data.Execute();
+            return false;
+        }
+    }
+    public class WaitUniTime : Awaitable,IPoolNode<WaitUniTime> {
+        static Pool<WaitUniTime> _pool;
+        public ref WaitUniTime NextNode => ref _next;
+        WaitUniTime _next;
+        UniTime _targetTime;
+        public static WaitUniTime Create(UniTime time) {
+            if (!_pool.TryPop(out var item)) return new WaitUniTime(time);
+            item._targetTime=time.FromNow();
+            return item;
+        }
+        WaitUniTime(UniTime time) {
+            _targetTime = time.FromNow();
+        }
+        public override bool MoveNext() {
+            if (_data.IsStopped) return true;
+            if (_data.IsCanceled) {
+                _data.Throw(new OperationCanceledException());
+                return false;
+            }
+            if (UniTime.CurrentTime(_targetTime.IgnoreScale)<_targetTime.Seconds) {
+                return true;
+            }
+            _pool.TryPush(this);
+            _data.Execute();
+            return false;
+        }
+    }
+    public class WaitFrame : Awaitable,IPoolNode<WaitFrame> {
+        static Pool<WaitFrame> _pool;
+        public ref WaitFrame NextNode => ref _next;
+        WaitFrame _next;
+        int _remainFrames;
+        public static WaitFrame Create(int frameCount) {
+            if (!_pool.TryPop(out var item)) return new WaitFrame(frameCount);
+            item._remainFrames=frameCount;
+            return item;
+        }
+        WaitFrame(int  frameCount) {
+            _remainFrames = frameCount;
+        }
+        public override bool MoveNext() {
+            if (_data.IsStopped) return true;
+            if (_data.IsCanceled) {
+                _data.Throw(new OperationCanceledException());
+                return false;
+            }
+            if (0<--_remainFrames) {
                 return true;
             }
             _pool.TryPush(this);

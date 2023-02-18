@@ -107,7 +107,7 @@ namespace YS.Editor {
         {
             public PropertyData()
             {
-                DerivedTypes = TypeCache.GetTypesDerivedFrom(typeof(Variable<>)).Where(x =>x!=typeof(TypedObjectVariable)&& !x.IsAbstract&&!x.IsGenericType)
+                DerivedTypes = TypeCache.GetTypesDerivedFrom(typeof(Variable<>)).Where(x =>x!=typeof(TypedObjectVariable)&& !x.IsAbstract)
                     .ToArray();
                 Types = new ( string,Type)[DerivedTypes.Length];
                 for (var i = 0; i < DerivedTypes.Length; i++)

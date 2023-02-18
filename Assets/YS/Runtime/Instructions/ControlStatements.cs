@@ -23,7 +23,8 @@ namespace YS.Instructions {
             builder.Append("return");
         }
 
-    }public sealed class Break : IInstruction {
+    }
+    public sealed class Break : IInstruction {
         public static readonly byte Id = IInstruction.Count++;
         static Break (){
             IInstruction.Instructions[Id]= new Break();
@@ -35,6 +36,24 @@ namespace YS.Instructions {
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             builder.Append("break");
+        }
+    }public sealed class BreakIf : IInstruction {
+        public static readonly byte Id = IInstruction.Count++;
+        static BreakIf (){
+            IInstruction.Instructions[Id]= new BreakIf();
+        }
+        public void Execute(VirtualMachine vm) {
+            if (vm.ReadUshort() == 0 ^ vm.ReadVariable().As<bool>()) {
+                vm.CurrentInstructionIndex = 30000;
+                vm.State = ProcessState.Break;
+            }
+        }
+        public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
+            IInstruction.AppendIndent(builder, indentLevel);
+            builder.Append("if ");
+            if(vm.ReadUshort() == 0  )builder.Append("not ");
+            IInstruction.AppendVariable(builder, vm);
+            builder.Append(" break");
         }
     }
     public sealed class Continue : IInstruction {
@@ -49,6 +68,64 @@ namespace YS.Instructions {
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             builder.Append("continue");
+        }
+    }
+
+    public sealed unsafe class InfiniteLoop : IInstruction {
+        public static readonly InfiniteLoop Instance = new InfiniteLoop();
+        public static readonly byte Id = IInstruction.Count++;
+        static InfiniteLoop (){
+            IInstruction.Instructions[Id]= Instance;
+        }
+        public void Execute(VirtualMachine vm) {
+            ref var current = ref vm.CurrentInstructionIndex;
+            ++current;
+            var start = current;
+            var end = (ushort)(start + vm.ReadUshort());
+            var dataLength = vm.ReadUshort();
+            var startPtr = vm.CurrentDataPtr;
+            try {
+                while (true) {
+                    current = start;
+                    vm.CurrentDataPtr = startPtr;
+                    vm.ExecuteUntil(end);
+                    switch (vm.State) {
+                        case ProcessState.Continue:
+                            vm.State = ProcessState.Next;
+                            break;
+                        case ProcessState.Return:
+                            return;
+                        case ProcessState.Break:
+                            vm.State = ProcessState.Next;
+                            goto endloop;
+                        case ProcessState.Await: {
+                            vm.RestartForEachDataList.Add(new RestartForEachData(default,start,startPtr,vm));
+                            return;
+                        }
+                    }
+                }
+                endloop:
+                current = (ushort)(end - 1);
+                vm.CurrentDataPtr = startPtr + dataLength;
+                
+            }
+            catch (Exception) {
+                var op = vm.Codes[current];
+                if (op == 0) Debug.LogError(current + "st op is null");
+                else Debug.LogError(current + " : " + op);
+                throw;
+            }
+        }
+
+        public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
+            IInstruction.AppendIndent(builder, indentLevel);
+            builder.Append("loop ");
+            ref var current = ref vm.CurrentInstructionIndex;
+            var end = (ushort)(++current + vm.ReadUshort());
+            vm.ReadUshort();
+            builder.AppendLine();
+            vm.ToCode(builder,indentLevel+1,end);
+            --current;
         }
     }
 

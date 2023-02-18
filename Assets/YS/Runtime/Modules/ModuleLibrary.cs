@@ -312,7 +312,18 @@ namespace YS.Modules {
             var module = (left.Cache as Lazy<TypeModule>)?.Value;
             if (module is not null) {
                 module.TryGetMember(hash, name, out var  leftResult);
-                return  (MethodData) leftResult;
+                if (leftResult is MethodData) {
+                    return (MethodData)leftResult;
+                }
+                else {
+                    var list = (List<MethodData>) leftResult;
+                    foreach (var data in list) {
+                        if (data.ParamData[0].Type == left.type) {
+                            return data;
+                        }
+                    }
+                }
+                
             }
             if (left.type == right.type) {
                 return null;

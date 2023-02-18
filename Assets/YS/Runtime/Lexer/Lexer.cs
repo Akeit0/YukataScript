@@ -952,6 +952,7 @@ namespace YS.Lexer {
                 new("await", TokenType.AwaitKeyword),
                 new("class", TokenType.ClassKeyword),
                 new("if", TokenType.IfKeyword),
+                new ("while",TokenType.WhileKeyword),
                 new("not", TokenType.NotKeyword),
                 new("in", TokenType.InKeyword),
                 new("new", TokenType.NewKeyword),

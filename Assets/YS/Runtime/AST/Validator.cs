@@ -111,6 +111,7 @@ namespace YS.AST {
             return (copy,copied);
         }
         public static int AssignmentScore(Type target, Type src) {
+            if (src is null) return 10;
             if(target==src)return 10;
             if(target==typeof(Variable))return 9;
             if (src.IsValueType) {
@@ -267,7 +268,8 @@ namespace YS.AST {
             var methodDescription = function;
             var srcType = methodDescription.ReturnType;
             if (target.id == 0) {
-                context.EmitData(function.Index);
+                
+                context.EmitMethod(function.ID);
                 if(srcType is not null) context.EmitData(0);
                 foreach (var arg in arguments) {
                     context.EmitData(arg);
@@ -275,7 +277,6 @@ namespace YS.AST {
                 foreach (var Variable in function.GetDefaultValuesToSet(arguments.Length)) {
                     context.EmitData(context.AddVariable(Variable));
                 }
-                context.Emit(function.InstructionId);
                 return;
             }
             if (context.IsConst(target)) {
@@ -284,7 +285,7 @@ namespace YS.AST {
             var targetType = target.variable.type;
             var score = AssignmentScore(targetType, srcType);
             if (8 <= score) {
-                context.EmitData(function.Index);
+                context.EmitMethod(function.ID);
                 context.EmitData(target.id);
                 foreach (var arg in arguments) {
                     context.EmitData(arg);
@@ -292,23 +293,19 @@ namespace YS.AST {
                 foreach (var Variable in function.GetDefaultValuesToSet(arguments.Length)) {
                     context.EmitData(context.AddVariable(Variable));
                 }
-
-                context.Emit(function.InstructionId);
                 return;
             }
 
             var (result,_) = context.AddVariable(srcType);
-            context.EmitData(function.Index);
+            context.EmitMethod(function.ID);
             context.EmitData(result);
             foreach (var arg in arguments) {
                 context.EmitData(arg);
             }
 
             foreach (var Variable in function.GetDefaultValuesToSet(arguments.Length)) {
-                context.EmitData(context.AddVariable(Variable));
+                context.EmitData(Variable == Constants.Null ? (ushort) 1 : context.AddVariable(Variable));
             }
-
-            context.Emit(function.InstructionId);
             switch (score) {
                 case 1: {
                     context.EmitCopy(target.id, context.AddBoxed(result));

@@ -59,6 +59,30 @@
         {
             "Name": "UnityEngine.Color",
             "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.AnimationCurve",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "YS.Timer",
+            "CodeGenerationType": 0
+        },
+        {
+            "Name": "YS.EasingType",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Time",
+            "CodeGenerationType": 0
+        },
+        {
+            "Name": "UnityEngine.SpriteRenderer",
+            "CodeGenerationType": 2
+        },
+        {
+            "Name": "UnityEngine.Renderer",
+            "CodeGenerationType": 2
         }
     ]
 }

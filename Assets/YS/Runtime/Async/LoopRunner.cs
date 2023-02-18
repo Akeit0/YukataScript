@@ -23,9 +23,14 @@ namespace YS.Async {
 #endif
         }
 #if UNITY_EDITOR
+       
         void EditUpdate() {
-            Run();
-            UnityEditor.SceneView.RepaintAll();
+           if(0<Current.Count) {
+               Run();
+               UnityEditor.SceneView.RepaintAll();
+           }
+              
+          
         }
 #endif
         public void AddAction(ILoopItem item)

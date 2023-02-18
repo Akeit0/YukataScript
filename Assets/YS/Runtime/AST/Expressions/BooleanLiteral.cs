@@ -20,8 +20,9 @@ namespace YS.AST.Expressions {
             if (target.variable is Variable<bool>) {
                var v= context.AddVariable(Value?Constants.True:Constants.False);
                context.EmitCopy(target.id,v);
+               return;
             }
-
+            
             throw new Exception("not bool");
         }
         public (ushort id,object obj) Compile( CompilingContext context) {

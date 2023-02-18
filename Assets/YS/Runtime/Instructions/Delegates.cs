@@ -7,7 +7,7 @@ namespace YS.Instructions {
     
     public sealed class DelegateOp : IInstruction {
         public void Execute( VirtualMachine vm) {
-            DelegateLibrary.Delegates[vm.ReadUshort()].Action();
+            vm.Delegate();
         }
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder,indentLevel);
@@ -20,7 +20,7 @@ namespace YS.Instructions {
     }
     public sealed class Delegate1Op : IInstruction {
         public void Execute( VirtualMachine vm) {
-            DelegateLibrary.Delegate1s[vm.ReadUshort()].Action(vm.ReadVariable());
+            vm.Delegate1();
         }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder,ref  int indentLevel) {
@@ -46,7 +46,7 @@ namespace YS.Instructions {
     }
     public sealed class Delegate2Op : IInstruction {
         public void Execute( VirtualMachine vm) {
-            DelegateLibrary.Delegate2s[vm.ReadUshort()].Action(vm.ReadVariable(), vm.ReadVariable());
+            vm.Delegate2();
         }
 
 
@@ -76,7 +76,7 @@ namespace YS.Instructions {
     }
     public sealed class Delegate3Op : IInstruction {
         public void Execute( VirtualMachine vm) {
-            DelegateLibrary.Delegate3s[vm.ReadUshort()].Action(vm.ReadVariable(), vm.ReadVariable(), vm.ReadVariable());
+            vm.Delegate3();
         }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
@@ -108,10 +108,8 @@ namespace YS.Instructions {
 
     public sealed class Delegate4Op : IInstruction {
         public void Execute(VirtualMachine vm) {
-            DelegateLibrary.Delegate4s[vm.ReadUshort()].Action(vm.ReadVariable(), vm.ReadVariable(),
-                vm.ReadVariable(), vm.ReadVariable());
+            vm.Delegate4();
         }
-
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             var description = DelegateLibrary.Delegate4s[vm.ReadUshort()].Data;
@@ -143,8 +141,7 @@ namespace YS.Instructions {
 
     public sealed class Delegate5Op : IInstruction {
         public void Execute( VirtualMachine vm) {
-            DelegateLibrary.Delegate5s[vm.ReadUshort()].Action(vm.ReadVariable(), vm.ReadVariable(),
-                vm.ReadVariable(),vm.ReadVariable(),vm.ReadVariable());
+            vm.Delegate5();
         }
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);

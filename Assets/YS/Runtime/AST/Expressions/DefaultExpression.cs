@@ -14,8 +14,8 @@ namespace YS.AST.Expressions {
             context.EmitCopy(target.id,1);
         }
 
-        public (ushort id,object obj) Compile( CompilingContext context){
-            throw new Exception("default");
+        public (ushort id,object obj) Compile( CompilingContext context) {
+            return (1, context.GetVariable(1));
         }
     }
 }

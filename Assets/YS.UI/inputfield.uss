@@ -1,0 +1,33 @@
+TextField > TextInput, DropdownField>VisualElement {
+    background-color: rgb(65, 65, 65);
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: normal;
+    -unity-text-align: upper-left;
+    --unity-cursor-color: rgb(180, 180, 180);
+    padding: 0 0 0 2px;
+}
+
+TextField > Label ,DropdownField>Label{
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: normal;
+    -unity-text-align: upper-left;
+    padding: 0 0 0 2px;
+    max-width: 100px;
+    min-width: 10px;
+    margin-top: -1px;
+}
+#Variables >TextField ,DropdownField {
+    height: 18px;
+}
+Button{
+    background-color: rgb(100, 100, 100);
+    font-size: 14px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: normal;
+    -unity-text-align: upper-left;
+    --unity-cursor-color: rgb(180, 180, 180);
+    padding: 0 0 0 2px;
+    height: 18px;
+}

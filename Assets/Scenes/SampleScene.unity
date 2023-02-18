@@ -167,49 +167,119 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba27cbf03b404bcba3a3999823aeccbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  code: 
+  code: "print(color)\nprint(color*0.5f)\nvar timer=new YS.Timer(duration)\r\nwhile
+    not timer.IsExpired {\r\n\tawait 16.ms()\r\n\tvar current=timer.GetEasedRemainRatio(easingType)\r\n\ttransform.localScale=v3
+    * current\r\n}\r\nvar timer=new YS.Timer(duration)\r\nwhile not timer.IsExpired
+    {\r\n\tawait 16.ms()\r\n\tvar current=timer.GetEasedElapsedRatio(easingType)\r\n\n\ttransform.localScale=v3
+    * current\r\n}\r"
   TextFile: {fileID: 0}
   DoPerformanceCheck: 1
   Fields:
+  - Name: duration
+    Variable:
+      rid: 9208754327671799811
   - Name: transform
     Variable:
       rid: 9208754304739966981
   - Name: v3
     Variable:
-      rid: 9208754293580234753
-  - Name: f
+      rid: 9208754327671799810
+  - Name: easingType
     Variable:
-      rid: 9208754304739966982
-  - Name: txt
+      rid: 9208754327671799812
+  - Name: curve
     Variable:
-      rid: 9208754304739966987
-  - Name: o
+      rid: 9208754327671799809
+  - Name: color
     Variable:
-      rid: 9208754310625886218
+      rid: 9208754449636917248
   DoAsync: 0
   references:
     version: 2
     RefIds:
-    - rid: 9208754293580234753
-      type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
-      data:
-        value: {x: 300000, y: 100000, z: 100000}
     - rid: 9208754304739966981
       type: {class: UnityEngine_TransformVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
         value: {fileID: 496487399}
-    - rid: 9208754304739966982
+    - rid: 9208754327671799809
+      type: {class: UnityEngine_AnimationCurveVariable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 0.18682344
+            value: 0.37309253
+            inSlope: 1.3271183
+            outSlope: 1.3271183
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.40394548
+            value: 0.44862723
+            inSlope: 0.45184746
+            outSlope: 0.45184746
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 0.57644904
+            value: 0.63029844
+            inSlope: 0.36843315
+            outSlope: 0.36843315
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.35005257
+          - serializedVersion: 3
+            time: 0.7948015
+            value: 0.6931925
+            inSlope: 0.90880895
+            outSlope: 0.90880895
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+    - rid: 9208754327671799810
+      type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: {x: 5, y: 5, z: 1}
+    - rid: 9208754327671799811
       type: {class: floatVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: 3
-    - rid: 9208754304739966987
-      type: {class: stringVariable, ns: YS.Generated, asm: Assembly-CSharp}
+        value: 2
+    - rid: 9208754327671799812
+      type: {class: YS_EasingTypeVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: Start
-    - rid: 9208754310625886218
+        value: 25
+    - rid: 9208754449636917248
       type: {class: UnityEngine_ColorVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: {r: 0, g: 0, b: 0, a: 0}
+        value: {r: 1, g: 0, b: 1, a: 0.3112157}
 --- !u!1 &496487396
 GameObject:
   m_ObjectHideFlags: 0
@@ -286,8 +356,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 496487396}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.999998, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -531,16 +601,16 @@ MonoBehaviour:
   Fields:
   - Name: ok
     Variable:
-      rid: 9208754310625886208
+      rid: 9208754338373828608
   - Name: f
     Variable:
-      rid: 9208754310625886209
+      rid: 9208754338373828609
   - Name: v3
     Variable:
-      rid: 9208754310625886210
+      rid: 9208754338373828610
   - Name: obj
     Variable:
-      rid: 9208754310625886211
+      rid: 9208754338373828611
   Json: '{
 
     "ok":{"type":"bool","value":false},
@@ -555,19 +625,19 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 9208754310625886208
+    - rid: 9208754338373828608
       type: {class: boolVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
         value: 0
-    - rid: 9208754310625886209
+    - rid: 9208754338373828609
       type: {class: floatVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
         value: 7.16
-    - rid: 9208754310625886210
+    - rid: 9208754338373828610
       type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
         value: {x: 1.54, y: 0.96, z: 0}
-    - rid: 9208754310625886211
+    - rid: 9208754338373828611
       type: {class: UnityEngine_ObjectVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:
-        value: {fileID: 1559958411}
+        value: {fileID: 496487396}

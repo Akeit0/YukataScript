@@ -12,6 +12,12 @@ namespace YS.Generated {
              Register(new Variable<UnityEngine.GameObject>(),()=>Create_UnityEngine_GameObjectModule(typeof(UnityEngine.Object)));
              Register(new Variable<System.Enum>(),()=>Create_System_EnumModule());
              Register(new Variable<UnityEngine.Color>(),()=>Create_UnityEngine_ColorModule());
+             Register(new Variable<UnityEngine.AnimationCurve>(),()=>Create_UnityEngine_AnimationCurveModule());
+             Register(new Variable<YS.Timer>(),()=>Create_YS_TimerModule());
+             Register(new Variable<YS.EasingType>(),()=>Create_YS_EasingTypeModule(typeof(System.Enum)));
+             Register(new Variable<UnityEngine.Time>(),()=>Create_UnityEngine_TimeModule());
+             Register(new Variable<UnityEngine.SpriteRenderer>(),()=>Create_UnityEngine_SpriteRendererModule(typeof(UnityEngine.Renderer)));
+             Register(new Variable<UnityEngine.Renderer>(),()=>Create_UnityEngine_RendererModule(typeof(UnityEngine.Component)));
         }
     }
 }

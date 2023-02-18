@@ -4,13 +4,13 @@ using System.Diagnostics;
 namespace YS {
     public readonly struct ValueStopwatch
     {
-        private static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
+        static readonly double TimestampToTicks = TimeSpan.TicksPerSecond / (double)Stopwatch.Frequency;
 
-        private readonly long _startTimestamp;
+        readonly long _startTimestamp;
 
         public bool IsActive => _startTimestamp != 0;
 
-        private ValueStopwatch(long startTimestamp)
+        ValueStopwatch(long startTimestamp)
         {
             _startTimestamp = startTimestamp;
         }

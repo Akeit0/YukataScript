@@ -4,7 +4,7 @@ using YS.Lexer;
 using YS.Instructions;
 using YS.VM;
 namespace YS.AST.Statements {
-    public class WhileExpression : IStatement {
+    public class WhileStatement : IStatement {
         public bool IsNot { get; set; }
         public IExpression Condition { get; set; }
         public BlockStatement Block { get; set; }
@@ -20,7 +20,18 @@ namespace YS.AST.Statements {
         }
 
         public void Compile(CompilingContext context) {
-            throw new NotSupportedException();
+            context.MoveToNextStatement();
+            context.Emit(InfiniteLoop.Id);
+            var d = context.EnterToScope();
+            var (boolean,variable)=Condition.Compile(context).Cast();
+            context.EmitData(IsNot ?(ushort)1:(ushort)0);
+            context.EmitData(boolean);
+            context.Emit(BreakIf.Id);
+            foreach (var statement in Block.Statements) {
+                
+                statement.Compile(context);
+            }
+            context.ExitFromScope(d);
 
         }
     }
