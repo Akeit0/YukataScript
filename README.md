@@ -1,7 +1,8 @@
 # YukataScript
 Demo  https://akeit0.github.io/YukataScript/
 
-Requires Unity 2021.3 or higher
+__Requires Unity 2021.3 or higher__
+
 Script Language for Unity/C#
 
 No more allocations(including boxing) and typechecks than C# at run time.
@@ -11,7 +12,7 @@ Theoretically all types and methods can be used except ByReflike(such as Span\<T
 The writing style is a mixture of C# and go lang.
 
 
-But it's in alpha and very buggy.
+__But it's in alpha and very buggy.__
 I need your help.
 ## Very easy async/await on Editor. 
 ![Async](/Images/YSAsync.gif)
