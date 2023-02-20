@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Vector3 = UnityEngine.Vector3;
 using IFormatProvider = System.IFormatProvider;
 
@@ -61,7 +62,7 @@ namespace YS.Generated {
             module.RegisterMethod("SqrMagnitude", (result, input1) => result.SetValue(Vector3.SqrMagnitude(input1.As<Vector3>())));
             module.RegisterMethod("Min", (result, input1, input2) => result.SetValue(Vector3.Min(input1.As<Vector3>(),input2.As<Vector3>())));
             module.RegisterMethod("Max", (result, input1, input2) => result.SetValue(Vector3.Max(input1.As<Vector3>(),input2.As<Vector3>())));
-            module.RegisterMethod("op_Addition", (result, input1, input2) => result.SetValue(input1.As<Vector3>()+input2.As<Vector3>()));
+            module.RegisterMethod("op_Addition", (result, input1, input2) => Unsafe.As<Variable<Vector3>>(result).value=(Unsafe.As<Variable<Vector3>>(input1).value+Unsafe.As<Variable<Vector3>>(input2).value));
             module.RegisterMethod("op_Subtraction", (result, input1, input2) => result.SetValue(input1.As<Vector3>()-input2.As<Vector3>()));
             module.RegisterMethod("op_UnaryNegation", (result, input1) => result.SetValue(-input1.As<Vector3>()));
             module.RegisterMethod("op_Multiply", Types(typeof(Vector3),typeof(float)),(result, input1, input2) => result.SetValue(input1.As<Vector3>()*input2.As<float>()));

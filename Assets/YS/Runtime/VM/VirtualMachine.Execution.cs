@@ -1,4 +1,5 @@
-﻿using YS.Instructions;
+﻿using System.Runtime.CompilerServices;
+using YS.Instructions;
 
 namespace YS.VM {
     public  unsafe partial class VirtualMachine {
@@ -6,7 +7,10 @@ namespace YS.VM {
         internal ushort* CurrentDataPtr;
         public ushort ReadUshort() => *CurrentDataPtr++;
         public void ReadUshort(int count) => CurrentDataPtr+=count;
-        public Variable ReadVariable() =>Variables[ReadUshort()];
+        public Variable ReadVariable() =>Variables[*CurrentDataPtr++];
+        public Variable<T> ReadVariable<T>() =>Unsafe.As<Variable<T>>(Variables[*CurrentDataPtr++]);
+        
+        public T ReadValue<T>() =>Unsafe.As<Variable<T>>(Variables[*CurrentDataPtr++]).value;
         public void Delegate() {
             DelegateLibrary.Delegates[*CurrentDataPtr++].Action();
         }
@@ -57,14 +61,14 @@ namespace YS.VM {
         public void ExecuteUntil(ushort end) {
             var codes = Codes;
             while (CurrentInstructionIndex<end) {
-                IInstruction.Instructions[codes[CurrentInstructionIndex]].Execute(this);
+                InstructionArray[codes[CurrentInstructionIndex]](this);
                 ++CurrentInstructionIndex;
             }
         }
         public void ExecuteUntilEnd() {
             var codes = Codes;
             while (CurrentInstructionIndex<OpCount) {
-                IInstruction.Instructions[codes[CurrentInstructionIndex]].Execute(this);
+                InstructionArray[codes[CurrentInstructionIndex]](this);
                 ++CurrentInstructionIndex;
             }
         }

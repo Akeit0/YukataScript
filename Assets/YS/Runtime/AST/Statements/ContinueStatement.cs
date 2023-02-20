@@ -13,7 +13,7 @@ namespace YS.AST.Statements {
 
         public void Compile(CompilingContext context) {
             context.MoveToNextStatement();
-            context.Emit(Continue.Id);
+            context.Emit(VM.Instructions.Continue);
         }
     }
 }

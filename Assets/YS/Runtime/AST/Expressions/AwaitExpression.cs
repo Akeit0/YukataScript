@@ -23,7 +23,7 @@ namespace YS.AST.Expressions {
             var variableType = variable.type;
             if (DelegateLibrary.AwaiterIdDictionary.TryGetValue(variableType, out var id)) {
                 context.EmitData(id, target.id, t);
-                context.Emit(CustomAwaiter.Id);
+                context.Emit(VM.Instructions.CustomAwaiter);
                 return;
             }
 
@@ -35,7 +35,7 @@ namespace YS.AST.Expressions {
                     var onCompletedFunction = (MethodData) module.GetMember("OnCompleted");
                     var getResultFunction = (MethodData) module.GetMember("GetResult");
                     var isCompleted = context.AddVariable<bool>();
-                    context.Emit(AwaitableVoidPattern.Id);
+                    context.Emit(VM.Instructions.AwaitableVoidPattern);
                     context.EmitData(getAwaiter.Index);
                     context.EmitData(awaiter.id,t);
                     context.EmitData(isCompletedFunction.Index);
@@ -57,7 +57,7 @@ namespace YS.AST.Expressions {
                 var awaiter = DelegateLibrary.Awaiters[id];
                 var result = context.AddVariable(awaiter.ResultType);
                 context.EmitData(id, result.id, t);
-                context.Emit(CustomAwaiter.Id);
+                context.Emit(VM.Instructions.CustomAwaiter);
                 return result;
             }
             throw new Exception();

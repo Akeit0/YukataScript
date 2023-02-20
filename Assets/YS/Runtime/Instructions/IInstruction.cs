@@ -35,7 +35,6 @@ namespace YS.Instructions {
             AppendVariable(builder, vm);
             builder.Append(", ");
         }
-        public void Execute(VirtualMachine vm);
         public void ToCode(VirtualMachine vm,StringBuilder builder,ref  int indentLevel);
         public static void AppendIndent(StringBuilder builder, int indentLevel) {
             var length = builder.Length;

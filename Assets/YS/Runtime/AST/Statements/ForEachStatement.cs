@@ -32,7 +32,7 @@ namespace YS.AST.Statements {
             context.EmitData(id);
             var (current,_)= context.AddVariable(DelegateLibrary.Enumerators[eId].GetCurrentType());
            context.EmitData(current);
-            context.Emit(ForEach.Id);
+            context.Emit(VM.Instructions.ForEach);
             var d = context.EnterToScope();
             context.Define(Current,current);
             foreach (var statement in Consequence.Statements) {

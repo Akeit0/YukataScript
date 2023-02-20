@@ -65,6 +65,9 @@ namespace YS.VM {
         public void Emit(byte opCode) {
             Engine.CodeToLine.Add(GetCurrentLine());
             Engine.Emit(opCode);
+        }public void Emit(Instructions code) {
+            Engine.CodeToLine.Add(GetCurrentLine());
+            Engine.Emit((byte)code);
         }
         public void EmitMethod(MethodID id) {
             Engine.CodeToLine.Add(GetCurrentLine());
@@ -100,32 +103,32 @@ namespace YS.VM {
         
         public void EmitCopy(ushort target,ushort src) {
             EmitData(target,src);
-            Emit(Copy.Id);
+            Emit(Instructions.Copy);
         }
         public void EmitCopyObject(ushort target,ushort src) {
             EmitData(target,src);
-            Emit(CopyObject.Id);
+            Emit(Instructions.CopyObject);
         }
         public void EmitReadChar(ushort target,ushort value) {
             EmitData(target);
             EmitData(value);
-            Emit(Read16.Id);
+            Emit(Instructions.Read16);
         }
         public void EmitReadInt(ushort target,int value) {
             EmitData(target);
             EmitIntData(value);
-            Emit(Read32.Id);
+            Emit(Instructions.Read32);
         }
         public void EmitReadFloat(ushort target,float value) {
             EmitData(target);
             EmitFloatData(value);
-            Emit(Read32.Id);
+            Emit(Instructions.Read32);
         }
         
         public void EmitReadDouble(ushort target,double value) {
             EmitData(target);
             EmitDoubleData(value);
-            Emit(Read64.Id);
+            Emit(Instructions.Read64);
         }
 
 
@@ -137,12 +140,12 @@ namespace YS.VM {
                         if ((type is < BinaryOpType.Equal or >= BinaryOpType.BitwiseAnd)&&target.variable is Variable<int>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(IntArithmeticOp.Id);
+                            Emit(Instructions.IntArithmetic);
                             return true;
                         }if (target.variable is Variable<bool>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(IntArithmeticOp.Id);
+                            Emit(Instructions.IntArithmetic);
                             return true;
                         }
                     }
@@ -152,12 +155,12 @@ namespace YS.VM {
                         if (type<BinaryOpType.Equal&&target.variable is Variable<float>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             return true;
                         }if (target.variable is Variable<bool>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             return true;
                         }
                     }
@@ -167,12 +170,12 @@ namespace YS.VM {
                         if (type<BinaryOpType.Equal&&target.variable is Variable<double>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(DoubleArithmeticOp.Id);
+                            Emit(Instructions.DoubleArithmetic);
                             return true;
                         }if ( BinaryOpType.Equal>=type && target.variable is Variable<bool>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(DoubleArithmeticOp.Id);
+                            Emit(Instructions.DoubleArithmetic);
                             return true;
                         }
                     }
@@ -189,12 +192,12 @@ namespace YS.VM {
                         if ((type is < BinaryOpType.Equal or >= BinaryOpType.BitwiseAnd)&&target.variable is Variable<int>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(IntArithmeticOp.Id);
+                            Emit(Instructions.IntArithmetic);
                             return true;
                         }if (target.variable is Variable<bool>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(IntArithmeticOp.Id);
+                            Emit(Instructions.IntArithmetic);
                             return true;
                         }
                     }
@@ -204,12 +207,12 @@ namespace YS.VM {
                         if (type<BinaryOpType.Equal&&target.variable is Variable<float>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             return true;
                         }if (target.variable is Variable<bool>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             return true;
                         }
                     }else if (right.variable is Variable<int>) {
@@ -228,17 +231,17 @@ namespace YS.VM {
                             var newValueId = AddVariable<float>().id;
                             EmitData(newValueId, right.id);
                             right.id= newValueId;
-                            Emit(IntToFloat.Id);
+                            Emit(Instructions.IntToFloat);
                         }
                         if (type<BinaryOpType.Equal&&target.variable is Variable<float>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             return true;
                         }if (target.variable is Variable<bool>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             return true;
                         }
                         
@@ -249,12 +252,12 @@ namespace YS.VM {
                         if (type<BinaryOpType.Equal&&target.variable is Variable<double>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(DoubleArithmeticOp.Id);
+                            Emit(Instructions.DoubleArithmetic);
                             return true;
                         }if ( BinaryOpType.Equal>=type && target.variable is Variable<bool>) {
                             EmitData((ushort)type);
                             EmitData(target.id,left.id,right.id);
-                            Emit(DoubleArithmeticOp.Id);
+                            Emit(Instructions.DoubleArithmetic);
                             return true;
                         }
                     }
@@ -274,7 +277,7 @@ namespace YS.VM {
                             var targetId = AddVariable(newVariable);
                            target = (targetId, newVariable);
                             EmitData(targetId,left.id,right.id);
-                            Emit(IntArithmeticOp.Id);
+                            Emit(Instructions.IntArithmetic);
                             return true;
                         }else {
                             EmitData((ushort)type);
@@ -282,7 +285,7 @@ namespace YS.VM {
                             var targetId = AddVariable(newVariable);
                             target = (targetId, newVariable);
                             EmitData(target.id,left.id,right.id);
-                            Emit(IntArithmeticOp.Id);
+                            Emit(Instructions.IntArithmetic);
                             return true;
                         }
                     }
@@ -297,7 +300,7 @@ namespace YS.VM {
                             var targetId = AddVariable(newVariable);
                             target = (targetId, newVariable);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             return true;
                         }if (type<BinaryOpType.BitwiseAnd) {
                             EmitData((ushort)type);
@@ -305,7 +308,7 @@ namespace YS.VM {
                             var targetId = AddVariable(newVariable);
                             target = (targetId, newVariable);
                             EmitData(target.id,left.id,right.id);
-                            Emit(FloatArithmeticOp.Id);
+                            Emit(Instructions.FloatArithmetic);
                             
                             return true;
                         }
@@ -328,7 +331,7 @@ namespace YS.VM {
         public ushort  AddBoxed(ushort src) {
             var target=Engine.AddVariable<object>();
             Engine.EmitData(target.Item1,src);
-            Engine.Emit(Boxing.Id);
+            Engine.Emit((byte)Instructions.Boxing);
             return target.Item1;
         }
 

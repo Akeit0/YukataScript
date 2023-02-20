@@ -20,13 +20,13 @@ namespace YS.AST.Expressions {
             context.EmitData((ushort) 1);
             context.EmitData(b);
 
-            context.Emit(IfElseInstruction.Id);
+            context.Emit(VM.Instructions.IfElse);
 
             var d = context.EnterToScope();
             Consequent.Compile(target,context);
             context.ExitFromScope(d);
 
-            context.Emit(ElseInstruction.Id);
+            context.Emit(VM.Instructions.Else);
             d = context.EnterToScope();
             Alternative.Compile(target,context);
             context.ExitFromScope(d);
@@ -38,13 +38,13 @@ namespace YS.AST.Expressions {
             context.EmitData((ushort)1);
             context.EmitData(b);
             
-            context.Emit(IfElseInstruction.Id);
+            context.Emit(VM.Instructions.IfElse);
             
             var d = context.EnterToScope();
             var first=Consequent.Compile(context);
             context.ExitFromScope(d);
            
-            context.Emit(ElseInstruction.Id);
+            context.Emit(VM.Instructions.Else);
             d = context.EnterToScope();
             Alternative.Compile(context);
             context.ExitFromScope(d);

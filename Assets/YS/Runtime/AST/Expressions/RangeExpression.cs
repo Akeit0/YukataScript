@@ -40,7 +40,7 @@ namespace YS.AST.Expressions {
                 }
 
                 context.EmitData(target.id, startId, endId);
-                context.Emit(IntRangeOp.Id);
+                context.Emit(VM.Instructions.IntRange);
             }
             else {
                 var (endId,endVariable) = End.Compile(context);
@@ -48,7 +48,7 @@ namespace YS.AST.Expressions {
                     throw new Exception("start must be int ");
                 }
                 context.EmitData(target.id, 1,endId);
-                context.Emit(IntRangeOp.Id);
+                context.Emit(VM.Instructions.IntRange);
             }
         }
 
@@ -66,7 +66,7 @@ namespace YS.AST.Expressions {
                 }
 
                 context.EmitData(rangeAddress, startId, endId);
-                context.Emit(IntRangeOp.Id);
+                context.Emit(VM.Instructions.IntRange);
                 return (rangeAddress,rangeVariable) ;
             }
             else {
@@ -75,7 +75,7 @@ namespace YS.AST.Expressions {
                     throw new Exception("start must be int ");
                 }
                 context.EmitData(rangeAddress, 1,endId);
-                context.Emit(IntRangeOp.Id);
+                context.Emit(VM.Instructions.IntRange);
                 return (rangeAddress,rangeVariable);
             }
         }

@@ -9,15 +9,7 @@ namespace YS.Instructions {
     
 
     public sealed class Return : IInstruction {
-        public static readonly byte Id = IInstruction.Count++;
-        static Return (){
-            IInstruction.Instructions[Id]= new Return();
-        }
-        public void Execute(VirtualMachine vm) {
-            vm.CurrentInstructionIndex = 30000;
-            vm.State = ProcessState.Return;
-        }
-
+      
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             builder.Append("return");
@@ -25,29 +17,13 @@ namespace YS.Instructions {
 
     }
     public sealed class Break : IInstruction {
-        public static readonly byte Id = IInstruction.Count++;
-        static Break (){
-            IInstruction.Instructions[Id]= new Break();
-        }
-        public void Execute(VirtualMachine vm) {
-            vm.CurrentInstructionIndex = 30000;
-            vm.State = ProcessState.Break;
-        }
+        
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             builder.Append("break");
         }
     }public sealed class BreakIf : IInstruction {
-        public static readonly byte Id = IInstruction.Count++;
-        static BreakIf (){
-            IInstruction.Instructions[Id]= new BreakIf();
-        }
-        public void Execute(VirtualMachine vm) {
-            if (vm.ReadUshort() == 0 ^ vm.ReadVariable().As<bool>()) {
-                vm.CurrentInstructionIndex = 30000;
-                vm.State = ProcessState.Break;
-            }
-        }
+        
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             builder.Append("if ");
@@ -57,14 +33,7 @@ namespace YS.Instructions {
         }
     }
     public sealed class Continue : IInstruction {
-        public static readonly byte Id = IInstruction.Count++;
-        static Continue (){
-            IInstruction.Instructions[Id]= new Continue();
-        }
-        public void Execute(VirtualMachine vm) {
-            vm.CurrentInstructionIndex = 30000;
-            vm.State = ProcessState.Continue;
-        }
+       
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             builder.Append("continue");
@@ -72,11 +41,7 @@ namespace YS.Instructions {
     }
 
     public sealed unsafe class InfiniteLoop : IInstruction {
-        public static readonly InfiniteLoop Instance = new InfiniteLoop();
-        public static readonly byte Id = IInstruction.Count++;
-        static InfiniteLoop (){
-            IInstruction.Instructions[Id]= Instance;
-        }
+       
         public void Execute(VirtualMachine vm) {
             ref var current = ref vm.CurrentInstructionIndex;
             ++current;
@@ -130,11 +95,7 @@ namespace YS.Instructions {
     }
 
     public sealed class ForEach :IInstruction {
-        public static readonly ForEach Instance = new ForEach();
-        public static readonly byte Id = IInstruction.Count++;
-        static ForEach (){
-            IInstruction.Instructions[Id]= Instance;
-        }
+       
         public unsafe void Execute(VirtualMachine vm) {
             var enumeratorSource=  DelegateLibrary.Enumerators[vm.ReadUshort()];
             var enumerable = vm.ReadVariable();
@@ -201,10 +162,7 @@ namespace YS.Instructions {
     }
     
     public sealed class IfInstruction :IInstruction{
-        public static readonly byte Id = IInstruction.Count++;
-        static IfInstruction (){
-            IInstruction.Instructions[Id]= new IfInstruction();
-        }
+       
         public  unsafe void Execute(VirtualMachine vm) {
             if (vm.ReadUshort()==0^vm.ReadVariable().As<bool>()) {
                 ref var current = ref vm.CurrentInstructionIndex;
@@ -249,10 +207,7 @@ namespace YS.Instructions {
 
     }
     public sealed class IfElseInstruction :IInstruction{
-        public static readonly byte Id = IInstruction.Count++;
-        static IfElseInstruction (){
-            IInstruction.Instructions[Id]= new IfElseInstruction();
-        }
+       
         public  unsafe void Execute(VirtualMachine vm) {
             if (vm.ReadUshort()==0^vm.ReadVariable().As<bool>()) {
                 ref var current = ref vm.CurrentInstructionIndex;
@@ -324,12 +279,7 @@ namespace YS.Instructions {
     }
 
     public sealed class ElseInstruction : IInstruction {
-        public static readonly byte Id = IInstruction.Count++;
-
-        static ElseInstruction() {
-            IInstruction.Instructions[Id] = new ElseInstruction();
-        }
-
+     
         public unsafe void Execute(VirtualMachine vm) {
             vm.CurrentInstructionIndex+=vm.ReadUshort();
             var dataLength=vm.ReadUshort();

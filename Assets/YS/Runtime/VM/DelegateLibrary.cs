@@ -48,7 +48,7 @@ namespace YS.VM {
                 case 5: return Delegate5s[index];
                 case 6: return Delegate6s[index];
             }
-            return length == MethodInfoInvoker.Id ? MethodInfos[index] : default;
+            return length == 7 ? MethodInfos[index] : default;
         }
         public static (MethodInfo MethodInfo,MethodData Data)[] MethodInfos=new (MethodInfo,MethodData)[16];
        static int methodInfoCount;
@@ -74,7 +74,7 @@ namespace YS.VM {
         
        public static MethodID Add(MethodData function,MethodInfo methodInfo) {
            CollectionsUtility.Add(ref MethodInfos,ref methodInfoCount, (methodInfo,function));
-           return new MethodID ( (ushort) (methodInfoCount - 1),MethodInfoInvoker.Id);
+           return new MethodID ( (ushort) (methodInfoCount - 1),7);
         }
         public static ushort Add(MethodData function,Delegate action,int paramLength) {
             switch (paramLength) {
