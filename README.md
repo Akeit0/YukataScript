@@ -14,7 +14,7 @@ But it's in alpha and very buggy.
 I need your help.
 ## Very easy async/await on Editor. 
 ![Async](/Images/YSAsync.gif)
-## Good Performance.
+## Good Performance(I am currently committed to this and will be under 17ms.).
 ![Performance](/Images/YSPerformance.gif)
 ## Easy code generation.
 ![TypeSelect](/Images/YSTypeSelect.gif)
