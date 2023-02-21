@@ -32,18 +32,18 @@ namespace YS.Editor {
         static LibraryWindow _window;
 
 
-        public void CreateGUI() {
-            GlobalModule.Activate();
-            var list = new ListView {
-                makeItem = () => new ListedButton(),
-                bindItem = (item, index) => {
-                    var button = (ListedButton) item;
-                    button.Button.text = DelegateLibrary.Delegates[index].Data.MethodName;
-                    button.Action = DelegateLibrary.Delegates[index].Action;
-                },
-                itemsSource = new object[DelegateLibrary.ActionCount]
-            };
-            rootVisualElement.Add(list);
+        public  void CreateGUI() {
+            // GlobalModule.Activate();
+            // var list = new ListView {
+            //     makeItem = () => new ListedButton(),
+            //     bindItem = (item, index) => {
+            //         var button = (ListedButton) item;
+            //         button.Button.text = DelegateLibrary.Delegates[index].Data.MethodName;
+            //         button.Action =()=> DelegateLibrary.Delegates[index].Action();
+            //     },
+            //     itemsSource = new object[DelegateLibrary.ActionCount]
+            // };
+            // rootVisualElement.Add(list);
         }
         
     }

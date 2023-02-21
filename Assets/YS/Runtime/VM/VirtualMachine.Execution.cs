@@ -11,41 +11,6 @@ namespace YS.VM {
         public Variable<T> ReadVariable<T>() =>Unsafe.As<Variable<T>>(Variables[*CurrentDataPtr++]);
         
         public T ReadValue<T>() =>Unsafe.As<Variable<T>>(Variables[*CurrentDataPtr++]).value;
-        public void Delegate() {
-            DelegateLibrary.Delegates[*CurrentDataPtr++].Action();
-        }
-        public void Delegate1() {
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate1s[*currentDataPtr++].Action(Variables[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-        public void Delegate2() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate2s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-        public void Delegate3() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate3s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++],
-                vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-        public void Delegate4() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate4s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++],
-                vars[*currentDataPtr++],  vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-         public void Delegate5() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate5s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++],
-                vars[*currentDataPtr++],  vars[*currentDataPtr++], vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
         
         
         public object ReadObject() =>Variables[ReadUshort()].ToObject();

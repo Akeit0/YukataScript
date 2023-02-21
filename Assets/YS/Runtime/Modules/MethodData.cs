@@ -1,12 +1,15 @@
-﻿using System;
+﻿#if !UNITY_EDITOR&&ENABLE_IL2CPP
+#define AOT
+#endif
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 using YS.Collections;
 using YS.VM;
-
 namespace YS.Modules {
+    
     public readonly struct MethodID {
         public readonly ushort Index;
         public readonly byte InstructionId;
@@ -120,7 +123,8 @@ namespace YS.Modules {
            }
            return Span<Variable>.Empty;
        }
-        public  MethodData(MethodInfo info,Delegate action) {
+#if AOT
+       public unsafe MethodData(MethodInfo info,delegate*<void> pointer) {
            var parameterInfos = info.GetParameters();
            var defaultValues = GetDefaultValues(parameterInfos);
            ParamDescription[] paramData=null;
@@ -149,7 +153,40 @@ namespace YS.Modules {
             ParamData = paramData;
             DefaultValues = defaultValues;
             var actionParamCount = (byte) (parameterInfos.Length + (info.IsStatic ? 0 : 1)+(ReturnType is null?0:1));
-            Index = DelegateLibrary.Add(this, action,actionParamCount);
+            Index = DelegateLibrary.Add(this, pointer);
+            InstructionId = actionParamCount;
+        }
+#endif
+       public  MethodData(MethodInfo info,IntPtr pointer) {
+           var parameterInfos = info.GetParameters();
+           var defaultValues = GetDefaultValues(parameterInfos);
+           ParamDescription[] paramData=null;
+            if (info.IsStatic) {
+                if (0<parameterInfos.Length&&info.IsDefined(typeof(ExtensionAttribute)))
+                    MethodType = MethodType.Extension;
+                else
+                    MethodType = MethodType.Static;
+            }
+            else {
+                MethodType = MethodType.Instance;
+            }
+            if(parameterInfos.Length!=0) {
+                paramData = new ParamDescription[parameterInfos.Length];
+                for (var index = 0; index < parameterInfos.Length; index++) {
+                    var parameterInfo = parameterInfos[index];
+                    paramData[index]=new ParamDescription(parameterInfo);
+                }
+            }
+            DeclaringType = info.DeclaringType;
+            MethodName = string.Intern(info.Name);
+            var returnType = info.ReturnType;
+            if (returnType != typeof(void)) {
+                ReturnType = returnType.IsByRef ? returnType.GetElementType() : returnType;
+            }
+            ParamData = paramData;
+            DefaultValues = defaultValues;
+            var actionParamCount = (byte) (parameterInfos.Length + (info.IsStatic ? 0 : 1)+(ReturnType is null?0:1));
+            Index = DelegateLibrary.Add(this, pointer,actionParamCount);
             InstructionId = actionParamCount;
         }
      public  MethodData(MethodInfo info) {
@@ -185,17 +222,10 @@ namespace YS.Modules {
             ParamData = paramData;
             DefaultValues = defaultValues;
 
-            if (MethodType == MethodType.Static&&ParamData == null&&ReturnType is null) {
-                var action = (Action)Delegate.CreateDelegate(typeof(Action), info);
-                Index = DelegateLibrary.Add(this, action,0);
-                InstructionId = 0;
-            }
-            else 
-            {
-                var methodID = DelegateLibrary.Add(this, info);
-                Index = methodID.Index;
-                InstructionId = methodID.InstructionId;
-            }
+            var methodID = DelegateLibrary.Add(this, info);
+            Index = methodID.Index;
+            InstructionId = methodID.InstructionId;
+            
            
         }
      
@@ -219,7 +249,7 @@ namespace YS.Modules {
         }
         
         
-        public  MethodData (ConstructorInfo info,Delegate action) {
+        public  MethodData (ConstructorInfo info,IntPtr pointer) {
            var parameterInfos = info.GetParameters();
            var defaultValues = GetDefaultValues(parameterInfos);
            
@@ -237,26 +267,26 @@ namespace YS.Modules {
             ReturnType = DeclaringType;
             ParamData = paramData;
             DefaultValues = defaultValues;
-            Index = DelegateLibrary.Add(this, action,parameterInfos.Length+1);
+            Index = DelegateLibrary.Add(this, pointer,parameterInfos.Length+1);
             InstructionId = (byte) (parameterInfos.Length+1);
          }
-        public static MethodData New(FieldInfo fieldInfo,FieldType fieldType,Delegate action) {
+        public static MethodData New(FieldInfo fieldInfo,FieldType fieldType,IntPtr pointer) {
            var name = fieldInfo.Name;
            switch (fieldType) {
                case FieldType.InstancedGetter: return new MethodData(fieldInfo.DeclaringType,MethodType.Instance,"get_"+name ,
-                   fieldInfo.FieldType, null,action);
+                   fieldInfo.FieldType, null,pointer);
                 case FieldType.InstancedSetter: return new MethodData(fieldInfo.DeclaringType,MethodType.Instance,"set_"+name ,
-                   null, new []{new ParamDescription(name,fieldInfo.FieldType)},action);
+                   null, new []{new ParamDescription(name,fieldInfo.FieldType)},pointer);
                case FieldType.StaticGetter: return new MethodData(fieldInfo.DeclaringType,MethodType.Static,"set_"+name ,
-                   fieldInfo.FieldType,null,action);
+                   fieldInfo.FieldType,null,pointer);
                case FieldType.StaticSetter: return new MethodData(fieldInfo.DeclaringType,MethodType.Static,"set_"+name ,
-                   null, new []{new ParamDescription(name,fieldInfo.FieldType)},action);
+                   null, new []{new ParamDescription(name,fieldInfo.FieldType)},pointer);
 
            }
 
            return null;
        }
-        public static (MethodData prefix ,MethodData postfix) NewRefUnary(Type declaringType,string paramName,bool isIncrement,Delegate prefixAction,Delegate postfixAction) {
+        public static (MethodData prefix ,MethodData postfix) NewRefUnary(Type declaringType,string paramName,bool isIncrement,IntPtr prefixAction,IntPtr postfixAction) {
            var prefix = new MethodData(declaringType, MethodType.Static,
                isIncrement ? "op_Increment" : "op_Decrement", declaringType,
                new ParamDescription[] {new (paramName, declaringType, PassType.Ref)},prefixAction);
@@ -266,7 +296,7 @@ namespace YS.Modules {
            return (prefix, postfix);
 
        }
-        public MethodData(Type declaringType,MethodType methodType, string methodName, Type returnType, ParamDescription[] paramData,Delegate action,Variable[] defaultValues=null) {
+        public MethodData(Type declaringType,MethodType methodType, string methodName, Type returnType, ParamDescription[] paramData,IntPtr action,Variable[] defaultValues=null) {
            DeclaringType = declaringType;
            MethodType = methodType;
            MethodName = string.Intern(methodName);
@@ -281,7 +311,23 @@ namespace YS.Modules {
            InstructionId = actionParamCount;
           
        }
-       
+#if AOT
+       public unsafe MethodData(Type declaringType,MethodType methodType, string methodName, Type returnType, ParamDescription[] paramData,delegate*<void> action,Variable[] defaultValues=null) {
+           DeclaringType = declaringType;
+           MethodType = methodType;
+           MethodName = string.Intern(methodName);
+           if (returnType is not null && returnType != typeof(void)) {
+               ReturnType = returnType.IsByRef ? returnType.GetElementType() : returnType;
+           }
+           ParamData = paramData;
+           DefaultValues = defaultValues;
+           var actionParamCount = (byte)((ParamData?.Length ?? 0)+ (MethodType == MethodType.Instance ? 1 : 0)+
+                                                   (ReturnType is null ? 0 : 1));
+           Index = DelegateLibrary.Add(this, action);
+           InstructionId = actionParamCount;
+          
+       }
+#endif
        public override string ToString() {
            var builder = new StringBuilder(20);
            if (MethodType == MethodType.Constructor) {

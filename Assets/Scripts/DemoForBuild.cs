@@ -90,7 +90,11 @@ namespace DefaultNamespace {
             if (Input.GetKeyDown(KeyCode.F12)||Input.GetKeyDown(KeyCode.Escape)) {
                 _root.visible = !_root.visible;
             }
-
+            if (Input.GetKeyDown(KeyCode.F5)) {
+                foreach (var id in _engine.UnmanagedData.AsSpan(0,_engine.DataCount)) {
+                    Debug.Log(id.ToString());
+                }
+            }
             foreach (var field in _selectableFields) {
                 field.Field.Validate();
             }

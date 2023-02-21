@@ -36,18 +36,24 @@ namespace YS.Generated {
     }
 }";
         const string RegisterTemplate = "             Register(typeof("; 
-        const string RegisterTemplateForInstantiable = "             Register(new Variable<"; 
-        
+        const string RegisterTemplateForInstantiable = "             Register(new Variable<";
+
         const string FileStart =
             @"
+using static System.Runtime.CompilerServices.Unsafe;
+using __V = YS.Variable;
 namespace YS.Generated {
-    public static partial class Wrapper {
-        public static TypeModule Create_";
+    public static partial  class Wrapper {
+";
+        const string ModuleStart= @"
+        static TypeModule Create_";
+        const string AOTModuleStart= @"#else
+        static unsafe TypeModule Create_";
 
          const string ClassStart = @"Module(global::System.Type baseType=null) {
             var module = new TypeModule(typeof(";
 
-    
+        
 
          const string FileEnd = 
              
@@ -58,9 +64,12 @@ namespace YS.Generated {
     }
 }";
 
+         const string FunctionStart = "       static void ";
+        //This is a template static void UnityEngine_Vector3_op_Addition(__V res,__V  i1, __V i2) => As<_Vector3>(res).value=As<_Vector3>(i1).value+As<_Vector3>(i2).value;
+         
          const string ConstTemplate = "            module.RegisterConst(\"";
          const string ConstTemplateVariable = "\",new Variable<";
-         const string MethodTemplate = "            module.RegisterMethod(\"";
+         const string MethodTemplate = "            module.RegisterMethod";
          const string ConstructorTemplate = "            module.RegisterConstructor(";
          const string FieldGetterTemplate = "            module.RegisterFieldGetter(\"";
          const string FieldSetterTemplate = "            module.RegisterFieldSetter(\"";
@@ -68,37 +77,42 @@ namespace YS.Generated {
          const string PropertySetterTemplate = "            module.RegisterPropertySetter(\"";
          
          
-         
-         static string[] ActionTemplate = {
-            "() => ",
-            "input1 => ",
-            "(input1, input2) => ",
-            "(input1, input2, input3)  =>  ",
-            "(input1, input2, input3, input4)  => ",
-            "(input1, input2, input3, input4, input5)  => ",
-            "(input1, input2, input3, input4, input5, input6)  => ",
-            "(input1, input2, input3, input4, input5, input6, input7)  => "
+         static string[] NewActionTemplate = {
+             "() => ",
+             "(__V  i1) => ",
+             "(__V  i1, __V  i2) => ",
+             "(__V  i1, __V  i2, __V  i3)  =>  ",
+             "(__V  i1, __V  i2, __V  i3, __V  i4)  => ",
+             "(__V  i1, __V  i2, __V  i3, __V  i4, __V  i5)  => ",
+             "(__V  i1, __V  i2, __V  i3, __V  i4, __V  i5, __V  i6)  => ",
+             "(__V  i1, __V  i2, __V  i3, __V  i4, __V  i5, __V  i6, __V  i7)  => "
+         };
+        public static string[] NewArgumentValueTemplate = {
+            ">(i1).value", ">(i2).value", ">(i3).value", ">(i4).value",
+            ">(i5).value", ">(i6).value", ">(i7).value", ">(i8).value",
         };
-        public static string[] ArgumentValueTemplate = {
-            "input1.As<", "input2.As<", "input3.As<", "input4.As<",
-            "input5.As<", "input6.As<", "input7.As<", "input8.As<",
-        };
-
-        public static string[] FuncTemplate = {
-            "result => result.SetValue(",
-            "(result, input1) => result.SetValue(",
-            "(result, input1, input2) => result.SetValue(",
-            "(result, input1, input2, input3) => result.SetValue(",
-            "(result, input1, input2, input3, input4) => result.SetValue(",
-            "(result, input1, input2, input3, input4, input5) => result.SetValue(",
-            "(result, input1, input2, input3, input4, input5, input6) => result.SetValue(",
+        
+        static string[] NewFuncTemplate = {
+            "(__V res) =>  As<",
+            "(__V res, __V  i1) => As<",
+            "(__V res,__V  i1, __V  i2) => As<",
+            "(__V res,__V  i1, __V  i2, __V  i3)  =>  As<",
+            "(__V res,__V  i1, __V  i2, __V  i3, __V  i4)  => As<",
+            "(__V res,__V  i1, __V  i2, __V  i3, __V  i4, __V  i5)  => As<",
+            "(__V res,__V  i1, __V  i2, __V  i3, __V  i4, __V  i5, __V  i6)  => As<",
+            "(__V res,__V  i1, __V  i2, __V  i3, __V  i4, __V  i5, __V  i6, __V  i7)  => As<"
         };
         static readonly StringBuilder InspectorBuilder=new (100);
         static readonly StringBuilder RegisterBuilder=new (100);
         static readonly StringBuilder AliasBuilder=new (100);
+        static readonly StringBuilder FunctionNameBuilder=new (30);
+        static readonly StringBuilder FunctionBuilder=new (2000);
+        static readonly StringBuilder FullFunctionBuilder=new (2000);
         static readonly StringBuilder ClassBuilder=new (2000);
+        static readonly StringBuilder AOTClassBuilder=new (2000);
+        static readonly StringBuilder FileBuilder=new (2000);
         static readonly StringBuilder MemberBuilder=new (100);
-        static readonly StringBuilder MemberBuilder2=new (100);
+        static readonly StringBuilder AOTMemberBuilder=new (100);
         static readonly StringDictionary<string> AliasDict=new (20);
         static readonly Dictionary<Type, string> TypeNameDict = new (10);
         static readonly StringDictionary< SimpleList<MethodInfo>> MethodInfoDict= new (10);
@@ -106,26 +120,77 @@ namespace YS.Generated {
 
         static WrapperGenerator() {
             BannedNames.Add("runInEditMode");
-            BannedNames.Add("Chars");
         }
         static void Initialize() {
             AliasBuilder.Clear();
+            FileBuilder.Clear();
             ClassBuilder.Clear();
+            AOTClassBuilder.Clear();
+            FunctionNameBuilder.Clear();
+            FunctionBuilder.Clear();
+            FullFunctionBuilder.Clear();
             MemberBuilder.Clear();
-            MemberBuilder2.Clear();
+            AOTMemberBuilder.Clear();
             AliasDict.Clear();
             TypeNameDict.Clear();
             MethodInfoDict.Clear();
+        }
+        static void Append(this StringBuilder builder,string arg1,string arg2) {
+            builder.Append(arg1);
+            builder.Append(arg2);
+        }
+        static void Append(this StringBuilder builder,StringBuilder arg1,string arg2) {
+            builder.Append(arg1);
+            builder.Append(arg2);
+        }
+        static void Append(this StringBuilder builder,string arg1,string arg2,string arg3) {
+            builder.Append(arg1);
+            builder.Append(arg2);
+            builder.Append(arg3);
+        }static void Append(this StringBuilder builder,string arg1,string arg2,string arg3,string arg4) {
+            builder.Append(arg1);
+            builder.Append(arg2);
+            builder.Append(arg3);
+            builder.Append(arg4);
+        }
+        
+        static void AppendStaticArg(this StringBuilder builder,int argNumber, ParameterInfo[] parameterInfos) {
+            builder.Append("As<");
+            builder.Append(parameterInfos[argNumber].ParameterType.GetVariableName());
+            builder.Append(NewArgumentValueTemplate[argNumber]);
+        }
+        static void AppendInstanceArg(this StringBuilder builder,int argNumber, ParameterInfo[] parameterInfos) {
+            builder.Append("As<");
+            builder.Append(parameterInfos[argNumber].ParameterType.GetVariableName());
+            builder.Append(NewArgumentValueTemplate[argNumber+1]);
+        }
+        static void AppendNameBuilderAndClear(this StringBuilder builder) {
+            builder.Append(FunctionStart);
+            builder.Append(FunctionNameBuilder);
+            FunctionNameBuilder.Clear();
+        }
+
+        static void CopyMemberToAOT() {
+            AOTMemberBuilder.Append(MemberBuilder);
+            AOTMemberBuilder.Append("&");
+            AOTMemberBuilder.Append(FunctionNameBuilder);
+            AOTMemberBuilder.AppendLine(");");
+        }
+        static string GetVariableName(this Type type) {
+            if (type.IsArray) {
+                 return "Variable<"+GetName(type.GetElementType())+"[]>";
+            }
+
+            return "_" + GetName(type);
         }
 
         static string GetName(this Type type) {
             if (TypeNameDict.TryGetValue(type, out var name)){
                 return name;
             }
-          
             if (type.IsArray) {
                  name = type.GetElementType().GetName()+"[]";
-                TypeNameDict.Add(type,name);
+                 TypeNameDict[type] = name;
                 return name;
             }
             if (type.IsConstructedGenericType) {
@@ -161,6 +226,7 @@ namespace YS.Generated {
             
                 if (nameData.Namespace is null) {
                     TypeNameDict.Add(type,nameData.Name);
+                    AliasDict[nameData.Name] = nameData.Name;
                     return nameData.Name;
                 }
 
@@ -322,6 +388,17 @@ namespace YS.Generated {
             ClassBuilder.Append(InspectorVariableFileStart);
 
         }
+
+        static void AddTemp() {
+            ClassBuilder.Append(MemberBuilder);
+            MemberBuilder.Clear();
+            AOTClassBuilder.Append(AOTMemberBuilder);
+            AOTMemberBuilder.Clear();
+            if(FunctionBuilder.Length!=0) {
+                FileBuilder.Append(FunctionBuilder);
+                FunctionBuilder.Clear();
+            }
+        }
         public static string GenerateWrapper(Type type) {
             if (type is null) return null;
             if (type.IsEnum) {
@@ -343,42 +420,42 @@ namespace YS.Generated {
                 if (type.IsNested) {
                     typeName = typeName.Replace('+', '_');
                 }
-                ClassBuilder.Append(FileStart);
-                ClassBuilder.Append(typeName);
-                
+
+                var fullName = typeName;
+                FileBuilder.Append(FileStart);
+                ClassBuilder.AppendLine("#if !AOT");
+                ClassBuilder.Append(ModuleStart,typeName);
+                AOTClassBuilder.Append(AOTModuleStart,typeName);
                 
                 
                 typeName = GetName(type);
-                ClassBuilder.Append(ClassStart);
-                ClassBuilder.Append(typeName);
+                ClassBuilder.Append(ClassStart,typeName);
                 ClassBuilder.AppendLine("));");
+                AOTClassBuilder.Append(ClassStart,typeName);
+                AOTClassBuilder.AppendLine("));");
+                
+                var count = 0;
                 foreach (var constructorInfo in type.GetConstructors()) {
-                    if (!Generate(constructorInfo)) continue;
-                    ClassBuilder.Append(MemberBuilder);
-                    ClassBuilder.Append(MemberBuilder2);
-                    MemberBuilder.Clear();
-                    MemberBuilder2.Clear();
+                    if (!Generate(constructorInfo,fullName,count)) continue;
+                    count++;
+                    AddTemp() ;
                 }
                 foreach (var fieldInfo in type.GetFields(BindingFlags.DeclaredOnly|BindingFlags.Public | BindingFlags.Static)) {
-                    if (!GenerateStaticField(fieldInfo)) continue;
-                    ClassBuilder.Append(MemberBuilder);
-                    MemberBuilder.Clear();
+                    if (!GenerateStaticField(fieldInfo,fullName)) continue;
+                    AddTemp() ;
                 }
                 foreach (var fieldInfo in type.GetFields(BindingFlags.DeclaredOnly|BindingFlags.Public |BindingFlags.Instance)) {
-                    if (!GenerateInstanceField(fieldInfo)) continue;
-                    ClassBuilder.Append(MemberBuilder);
-                    MemberBuilder.Clear();
+                    if (!GenerateInstanceField(fieldInfo,fullName)) continue;
+                    AddTemp() ;
                 }
                 foreach (var propertyInfo in type.GetProperties(BindingFlags.DeclaredOnly|BindingFlags.Public | BindingFlags.Static)) {
-                    if (!GenerateStaticProperty(propertyInfo)) continue;
-                    ClassBuilder.Append(MemberBuilder);
-                    MemberBuilder.Clear();
+                    if (!GenerateStaticProperty(propertyInfo,fullName)) continue;
+                    AddTemp() ;
                 }
                 
                 foreach (var propertyInfo in type.GetProperties(BindingFlags.DeclaredOnly|BindingFlags.Public |BindingFlags.Instance)) {
-                    if (!GenerateInstanceProperty(propertyInfo)) continue;
-                    ClassBuilder.Append(MemberBuilder);
-                    MemberBuilder.Clear();
+                    if (!GenerateInstanceProperty(propertyInfo,fullName)) continue;
+                    AddTemp() ;
                 }
                 
                 foreach (var methodInfo in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly  )) {
@@ -395,30 +472,40 @@ namespace YS.Generated {
                 foreach (var pair in MethodInfoDict) {
                     var list = pair.Value;
                     if (list.Count == 1) {
-                        if (!Generate(list[0])) continue;
-                        ClassBuilder.Append(MemberBuilder);
-                        MemberBuilder.Clear();
+                        if (!Generate(list[0],fullName)) continue;
+                        AddTemp() ;
                     }
                     else {
+                        count = 0;
                         foreach (var methodInfo in list.AsSpan()) {
-                            if (!GenerateWithType(methodInfo)) continue;
-                            ClassBuilder.Append(MemberBuilder);
-                            ClassBuilder.Append(MemberBuilder2);
-                            MemberBuilder.Clear();
-                            MemberBuilder2.Clear();
+                            if (!GenerateWithType(methodInfo,fullName,count)) continue;
+                            count++;
+                            AddTemp() ;
                         }
                     }
                 }
-                ClassBuilder.Append(FileEnd);
+                FileBuilder.Append(ClassBuilder);
+                FileBuilder.Append(AOTClassBuilder);
+                FileBuilder.AppendLine("#endif");
+                FileBuilder.Append(FileEnd);
+                AliasBuilder.AppendLine(@"#if !UNITY_EDITOR&&ENABLE_IL2CPP
+#define AOT
+#endif");
                 foreach (var pair in AliasDict) {
-                   
-                    AliasBuilder.Append("using ");
+                    if(pair.Value.Contains('.')&&!pair.Value.Contains('[')) {
+                       AliasBuilder.Append("using ");
+                       AliasBuilder.Append(pair.Key);
+                       AliasBuilder.Append(" = ");
+                       AliasBuilder.Append(pair.Value);
+                       AliasBuilder.AppendLine(";");
+                    }
+                    AliasBuilder.Append("using _");
                     AliasBuilder.Append(pair.Key);
-                    AliasBuilder.Append(" = ");
+                    AliasBuilder.Append(" = YS.Variable<");
                     AliasBuilder.Append(pair.Value);
-                    AliasBuilder.AppendLine(";");
+                    AliasBuilder.AppendLine(">;");
                 }
-                return  AliasBuilder.ToString()+ClassBuilder.ToString();
+                return  AliasBuilder.ToString()+FileBuilder.ToString();
             }
             finally {
                 Initialize();
@@ -429,7 +516,7 @@ namespace YS.Generated {
         static string GenerateEnum(Type type) {
            
             var typeName = type.BuildFullName();
-            ClassBuilder.Append(FileStart);
+            ClassBuilder.Append(FileStart,ModuleStart);
             ClassBuilder.Append(typeName.Replace('.','_'));
             typeName = GetName(type);
             ClassBuilder.Append(ClassStart);
@@ -449,6 +536,7 @@ namespace YS.Generated {
                 ClassBuilder.AppendLine( "));");
             }
             ClassBuilder.Append(FileEnd);
+          
             foreach (var pair in AliasDict) {
                    
                 AliasBuilder.Append("using ");
@@ -459,7 +547,7 @@ namespace YS.Generated {
             }
             return  AliasBuilder.ToString()+ClassBuilder.ToString();
         }
-        static bool Generate(ConstructorInfo info) {
+        static bool Generate(ConstructorInfo info,string fullName,int count) {
             if (info.IsDefined(typeof(ObsoleteAttribute))) {
                 return false;
             }
@@ -467,203 +555,287 @@ namespace YS.Generated {
             var length = parameterInfos.Length;
             if(4<length) return false;
             var builder=MemberBuilder;
-            var builder2=MemberBuilder2;
+            var functionBuilder=FunctionBuilder;
+            functionBuilder.Append("        static void ");
+            FunctionNameBuilder.Append(fullName);
+            FunctionNameBuilder.Append("_ctor");
+            for (int i = 0; i < count; i++) {
+                FunctionNameBuilder.Append('_');
+            }
+            functionBuilder.Append(FunctionNameBuilder);
+            functionBuilder.Append(NewFuncTemplate[length]);
+            
+            functionBuilder.Append(info.DeclaringType.GetVariableName());
+            functionBuilder.Append(">(res).value = new ");
+            functionBuilder.Append(info.DeclaringType.GetName());
+            functionBuilder.Append('(');
             builder.Append(ConstructorTemplate);
-           if(length!=0) builder2.Append(',');
-            builder2.Append(FuncTemplate[length] );
-            builder2.Append(" new ");
-            builder2.Append(info.DeclaringType.GetName());
-            builder2.Append('(');
             for (int i = 0; i < length; i++) {
                 if (!BuildParamWithTypes(i, parameterInfos[i])) return false;
-                if(i != length - 1) builder.Append(',' );
-                builder2.Append(i != length - 1 ? ">()," : ">()");
+                builder.Append(',');
+                if(i != length - 1) {
+                    functionBuilder.Append(',');
+                }
             }
-            builder2.AppendLine( ")));");
+
+            CopyMemberToAOT();
+            builder.Append(FunctionNameBuilder);
+            builder.AppendLine(");");
+            FunctionNameBuilder.Clear();
+            functionBuilder.AppendLine( ");");
+            FileBuilder.Append(functionBuilder);
+            functionBuilder.Clear();
             return true;
         }
-       
-        static bool Generate(MethodInfo info) {
+        static bool Generate(MethodInfo info,string fullName) {
             if (info.IsDefined(typeof(ObsoleteAttribute))||info.IsGenericMethodDefinition) {
                 return false;
             }
-            var returnType = info.ReturnType;
-            if (returnType.IsByRefLike) return false;
             if (info.IsSpecialName) {
-                return GenerateSpecialName(MemberBuilder,info);
+                return GenerateSpecialName(info,fullName);
             }
             var parameterInfos = info.GetParameters();
             var length = parameterInfos.Length;
             
             if(5<length) return false;
-            
             var builder=MemberBuilder;
+            var functionBuilder=FunctionBuilder;
             builder.Append(MethodTemplate);
+            builder.Append(length+ (info.IsStatic ? 0 : 1)+(info.ReturnType != typeof(void)?1:0));
+            builder.Append("(\"");
             builder.Append(info.Name);
-            builder.Append("\", ");
+            builder.Append("\",");
+            functionBuilder.Append(FunctionStart);
+            FunctionNameBuilder.Append(fullName);
+            FunctionNameBuilder.Append('_');
+            FunctionNameBuilder.Append(info.Name);
+            functionBuilder.Append(FunctionNameBuilder);
             if (info.IsStatic) {
-                builder.Append(returnType != typeof(void) ? FuncTemplate[length] : ActionTemplate[length]);
-                builder.Append(info.DeclaringType.GetName());
-                builder.Append('.');
-                builder.Append(info.Name);
-                builder.Append('(');
+                if (info.ReturnType != typeof(void)) {
+                    functionBuilder.Append( NewFuncTemplate[length] ,info.ReturnType.GetVariableName(),">(res).value=");
+                }
+                else {
+                    functionBuilder.Append(NewActionTemplate[length]);
+                }
+                functionBuilder.Append(info.DeclaringType.GetName());
+                functionBuilder.Append('.');
+                functionBuilder.Append(info.Name);
+                functionBuilder.Append('(');
                 for (int i = 0; i < length; i++) {
                     if (!BuildParam(i, parameterInfos[i])) return false;
-                    builder.Append(i != length - 1 ? ">()," : ">()");
+                    if(i != length - 1) {
+                        functionBuilder.Append(',');
+                    }
                 }
-                builder.AppendLine(info.ReturnType != typeof(void) ? ")));" : "));");
+                functionBuilder.AppendLine(");");
             }
             else {
-                builder.Append(info.ReturnType != typeof(void) ? FuncTemplate[length+1] : ActionTemplate[length+1]);
-                builder.Append(ArgumentValueTemplate[0]);
-                builder.Append(info.DeclaringType.GetName());
-                builder.Append(">().");
-                builder.Append(info.Name);
-                builder.Append('(');
+                if (info.ReturnType != typeof(void)) {
+                    functionBuilder.Append( NewFuncTemplate[length+1] ,info.ReturnType.GetVariableName(),">(res).value=");
+                }
+                else {
+                    functionBuilder.Append(NewActionTemplate[length+1]);
+                }
+
+                functionBuilder.Append("As<",info.DeclaringType.GetVariableName());
+                functionBuilder.Append(">(i1).value.",info.Name);
+                functionBuilder.Append('(');
                 for (int i = 0; i < length; i++) {
                     if (!BuildParam(i+1,parameterInfos[i])) return false;
+                    if(i != length - 1) functionBuilder.Append(',');
                     
-                    builder.Append(i != length - 1 ? ">()," : ">()");
                 }
-                builder.AppendLine(info.ReturnType != typeof(void) ? ")));" : "));");
+                functionBuilder.AppendLine(");");
             }
+            CopyMemberToAOT();
+            builder.Append(FunctionNameBuilder);
+            FunctionNameBuilder.Clear();
+            builder.AppendLine(");");
             return true;
         }
-        static bool GenerateWithType(MethodInfo info) {
+        static bool GenerateWithType(MethodInfo info,string fullName,int count) {
             if (info.IsDefined(typeof(ObsoleteAttribute))||info.IsGenericMethodDefinition) {
                 return false;
             }
             if (info.IsSpecialName) {
-                return GenerateSpecialNameWithTypes(info);
+                return GenerateSpecialNameWithTypes(info,fullName,count);
             }
             var parameterInfos = info.GetParameters();
             var length = parameterInfos.Length;
             
             if(5<length) return false;
             var builder=MemberBuilder;
-            var builder2=MemberBuilder2;
+            var functionBuilder=FunctionBuilder;
             builder.Append(MethodTemplate);
+            builder.Append(length+ (info.IsStatic ? 0 : 1)+(info.ReturnType != typeof(void)?1:0));
+            builder.Append("(\"");
             builder.Append(info.Name);
             builder.Append("\", Types(");
-            builder2.Append(',');
+            functionBuilder.Append(FunctionStart);
+            FunctionNameBuilder.Append(fullName);
+            FunctionNameBuilder.Append('_');
+            FunctionNameBuilder.Append(info.Name);
+            for (int i = 0; i < count; i++) {
+                FunctionNameBuilder.Append('_');
+            }
+            functionBuilder.Append(FunctionNameBuilder);
             if (info.IsStatic) {
-                builder2.Append(info.ReturnType != typeof(void) ? FuncTemplate[length] : ActionTemplate[length]);
-                builder2.Append(info.DeclaringType.GetName());
-                builder2.Append('.');
-                builder2.Append(info.Name);
-                builder2.Append('(');
+                if (info.ReturnType != typeof(void)) {
+                    functionBuilder.Append( NewFuncTemplate[length] ,info.ReturnType.GetVariableName(),">(res).value=");
+                }
+                else {
+                    functionBuilder.Append(NewActionTemplate[length]);
+                }
+                functionBuilder.Append(info.DeclaringType.GetName());
+                functionBuilder.Append('.');
+                functionBuilder.Append(info.Name);
+                functionBuilder.Append('(');
                 for (int i = 0; i < length; i++) {
                     if (!BuildParamWithTypes(i, parameterInfos[i])) return false;
-                    if(i != length - 1) builder.Append(',' );
-                    builder2.Append(i != length - 1 ? ">()," : ">()");
+                    if(i != length - 1) {
+                        builder.Append(',');
+                        functionBuilder.Append(',');
+                    }
                 }
 
-                builder.Append(')');
-                builder2.AppendLine(info.ReturnType != typeof(void) ? ")));" : "));");
+                functionBuilder.AppendLine(");");
             }
             else {
-                builder2.Append(info.ReturnType != typeof(void) ? FuncTemplate[length+1] : ActionTemplate[length+1]);
-                builder2.Append(ArgumentValueTemplate[0]);
-                builder2.Append(info.DeclaringType.GetName());
-                builder2.Append(">().");
-                builder2.Append(info.Name);
-                builder2.Append('(');
+                if (info.ReturnType != typeof(void)) {
+                    functionBuilder.Append( NewFuncTemplate[length+1] ,info.ReturnType.GetVariableName(),">(res).value=");
+                }
+                else {
+                    functionBuilder.Append(NewActionTemplate[length+1]);
+                }
+                functionBuilder.Append("As<",info.DeclaringType.GetVariableName());
+                functionBuilder.Append(">(i1).value.",info.Name);
+                functionBuilder.Append('(');
                 for (int i = 0; i < length; i++) {
                     if (!BuildParamWithTypes(i+1,parameterInfos[i])) return false;
-                    if(i != length - 1) builder.Append(',' );
-                    builder2.Append(i != length - 1 ? ">()," : ">()");
+                    if(i != length - 1) {
+                        builder.Append(',');
+                        functionBuilder.Append(',');
+                    }
                 }
-                builder.Append(')');
-                builder2.AppendLine(info.ReturnType != typeof(void) ? ")));" : "));");
+                
+                functionBuilder.AppendLine(");");
             }
+            builder.Append("),");
+            CopyMemberToAOT();
+            builder.Append(FunctionNameBuilder);
+            FunctionNameBuilder.Clear();
+            builder.AppendLine(");");
             return true;
         }
         
         
         static bool BuildParam(int inputIndex,ParameterInfo info) {
-            var builder=MemberBuilder;
+            var functionBuilder=FunctionBuilder;
             var type = info.ParameterType;
             if (type.IsByRefLike||type.IsPointer) {
+                functionBuilder.Clear();
                 MemberBuilder.Clear();
+                AOTMemberBuilder.Clear();
                 return false;
             }
+            string name;
             if (!type.IsByRef) {
-                builder.Append(ArgumentValueTemplate[inputIndex]);
-                builder.Append(type.GetName());
+                name = type.GetVariableName();
+                functionBuilder.Append("As<");
+                functionBuilder.Append(name);
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
+                
                 return true;
             }
             type = info.ParameterType.GetElementType();
+            name = type.GetVariableName();
             if (info.IsIn) {
-                builder.Append(ArgumentValueTemplate[inputIndex]);
-                builder.Append(type.GetName());
+                functionBuilder.Append("As<");
+                functionBuilder.Append(name);
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
             }
             else if (info.IsOut) {
-                builder.Append("out ");
-                builder.Append(ArgumentValueTemplate[inputIndex]);
-                builder.Append(type.GetName());
+                functionBuilder.Append("out As<");
+                functionBuilder.Append(name);
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
+               
             }
             else {
-                builder.Append("ref ");
-                builder.Append(ArgumentValueTemplate[inputIndex]);
-                builder.Append(type.GetName());
+                functionBuilder.Append("ref As<");
+                functionBuilder.Append(name);
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
+                
             }
             return true;
         }
         static bool BuildParamWithTypes(int inputIndex,ParameterInfo info) {
             var builder=MemberBuilder;
-            var builder2=MemberBuilder2;
+            var functionBuilder=FunctionBuilder;
             var type = info.ParameterType;
             if (type.IsByRefLike||type.IsPointer) {
                 builder.Clear();
-                builder2.Clear();
+                AOTMemberBuilder.Clear();
+                functionBuilder.Clear();
                 return false;
             }
 
             string name;
             if (!type.IsByRef) {
-                 name = type.GetName();
                 builder.Append("typeof(");
-                builder.Append(name);
+                builder.Append(type.GetName());
                 builder.Append(')');
-                builder2.Append(ArgumentValueTemplate[inputIndex]);
-                builder2.Append(name);
+                functionBuilder.Append("As<");
+                functionBuilder.Append(type.GetVariableName());
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
+                
                 return true;
             }
             type = info.ParameterType.GetElementType();
-            name = type.GetName();
+            
             builder.Append("typeof(");
-            builder.Append(name);
+            builder.Append(type.GetName());
             builder.Append(").MakeByRefType()");
+            name = type.GetVariableName();
             if (info.IsIn) {
-                builder2.Append(ArgumentValueTemplate[inputIndex]);
-                builder2.Append(name);
+                functionBuilder.Append("As<");
+                functionBuilder.Append(name);
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
             }
             else if (info.IsOut) {
-                builder2.Append("out ");
-                builder2.Append(ArgumentValueTemplate[inputIndex]);
-                builder2.Append(name);
+                functionBuilder.Append("out As<");
+                functionBuilder.Append(name);
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
+               
             }
             else {
-                builder2.Append("ref ");
-                builder2.Append(ArgumentValueTemplate[inputIndex]);
-                builder2.Append(name);
+                functionBuilder.Append("ref As<");
+                functionBuilder.Append(name);
+                functionBuilder.Append(NewArgumentValueTemplate[inputIndex]);
+                
             }
             return true;
         }
         
 
 
-         static bool GenerateSpecialName(StringBuilder builder, MethodInfo info) {
+         static bool GenerateSpecialName(MethodInfo info,string fullTypeName) {
             var name = info.Name;
             if(TryGetSpecialData(name,out var data)) {
-                builder.Append(MethodTemplate);
-                builder.Append(name);
+                MemberBuilder.Append(MethodTemplate);
+                MemberBuilder.Append(info.GetParameters().Length+ (info.IsStatic ? 0 : 1)+(info.ReturnType != typeof(void)?1:0));
+                MemberBuilder.Append("(\"");
+                MemberBuilder.Append(name);
                 MemberBuilder.Append("\", ");
+                FunctionNameBuilder.Append(fullTypeName,"_" ,name);
+                CopyMemberToAOT();
+                MemberBuilder.Append(FunctionNameBuilder);
+                MemberBuilder.AppendLine(");");
+                FunctionBuilder.AppendNameBuilderAndClear();
                 switch (data.Item1) {
-                    case SpecialInstructionType.Unary:GenerateUnaryInstruction( data, builder, info);
+                    case SpecialInstructionType.Unary:GenerateUnaryInstruction( data, info);
                         break;
                     case SpecialInstructionType.Binary:
-                        GenerateBinaryInstruction(data, builder, info);
+                        GenerateBinaryInstruction(data, info);
                         return true;
                     case SpecialInstructionType.IndexGetter:
                       return  GenerateGetIndexer( info);
@@ -674,22 +846,34 @@ namespace YS.Generated {
             }
             return false;
          }
-         static bool GenerateSpecialNameWithTypes(MethodInfo info) {
+         static bool GenerateSpecialNameWithTypes(MethodInfo info,string fullTypeName,int count) {
             var name = info.Name;
+            MemberBuilder.Clear();
             var data = GetSpecialData(name);
             if (data.Item1 is not SpecialInstructionType.Binary) {
-                MemberBuilder.Clear();
                 return false;
             }
             MemberBuilder.Append(MethodTemplate);
+            MemberBuilder.Append(info.GetParameters().Length+ (info.IsStatic ? 0 : 1)+(info.ReturnType != typeof(void)?1:0));
+            MemberBuilder.Append("(\"");
             MemberBuilder.Append(name);
             MemberBuilder.Append("\", Types(");
+            FunctionNameBuilder.Append(fullTypeName,"_" ,name);
+            for (int i = 0; i < count; i++) {
+                FunctionNameBuilder.Append('_');
+            }
+            FunctionBuilder.Append(FunctionStart);
+            FunctionBuilder.Append(FunctionNameBuilder);
             switch (data.Item1) {
                 case SpecialInstructionType.Binary:GenerateBinaryInstructionWithTypes(data, info);
                     break;
-                
-                
-            }
+            } 
+            
+            MemberBuilder.Append("),");
+            CopyMemberToAOT();
+            MemberBuilder.Append(FunctionNameBuilder);
+            MemberBuilder.AppendLine(");");
+            FunctionNameBuilder.Clear();
 
             return true;
         }
@@ -737,107 +921,108 @@ namespace YS.Generated {
 
 
 
-        static void GenerateUnaryInstruction((SpecialInstructionType,string)data,StringBuilder builder, MethodInfo info) {
-            builder.Append(FuncTemplate[1]);
+        static void GenerateUnaryInstruction((SpecialInstructionType,string)data,MethodInfo info) {
+            var builder = FunctionBuilder;
+            builder.Append(NewFuncTemplate[1],info.ReturnType.GetVariableName(),">(res).value=");
             builder.Append(data.Item2);
-            builder.Append(ArgumentValueTemplate[0]);
-            var parameterInfos = info.GetParameters();
-            builder.Append(parameterInfos[0].ParameterType.GetName());
-            builder.AppendLine( ">()));");
+            builder.AppendStaticArg(0,info.GetParameters());
+            builder.AppendLine(";");
         }
-        static void GenerateBinaryInstruction((SpecialInstructionType,string)data,StringBuilder builder, MethodInfo info) {
-            builder.Append(FuncTemplate[2]);
+        static void GenerateBinaryInstruction((SpecialInstructionType,string)data,MethodInfo info) {
+            var builder = FunctionBuilder;
+            builder.Append(NewFuncTemplate[2], info.ReturnType.GetVariableName(), ">(res).value=");
             var parameterInfos = info.GetParameters();
-            builder.Append(ArgumentValueTemplate[0]);
-            builder.Append(parameterInfos[0].ParameterType.GetName());
-            builder.Append( ">()");
+            builder.AppendStaticArg(0,parameterInfos);
             builder.Append(data.Item2);
-            builder.Append(ArgumentValueTemplate[1]);
-            builder.Append(parameterInfos[1].ParameterType.GetName());
-            builder.AppendLine( ">()));");
+            builder.AppendStaticArg(1,parameterInfos);
+            builder.AppendLine(";");
+            
         }
         static void GenerateBinaryInstructionWithTypes((SpecialInstructionType,string)data, MethodInfo info) {
-            var builder = MemberBuilder2;
-            builder.Append(FuncTemplate[2]);
+            var builder = FunctionBuilder;
+            builder.Append(NewFuncTemplate[2], info.ReturnType.GetVariableName(), ">(res).value=");
             var parameterInfos = info.GetParameters();
             BuildParamWithTypes(0, parameterInfos[0]);
             MemberBuilder.Append(',');
-            builder.Append( ">()");
             builder.Append(data.Item2);
             BuildParamWithTypes(1, parameterInfos[1]);
-            MemberBuilder.Append("),");
-            builder.AppendLine( ">()));");
+            builder.AppendLine(";");
         }
         
          static bool GenerateGetIndexer(MethodInfo info) {
              var parameterInfos = info.GetParameters();
              var length = parameterInfos.Length;
              if(5<length) return false;
-             var builder=MemberBuilder;
-             builder.Append( FuncTemplate[length+1]);
-             builder.Append(ArgumentValueTemplate[0]);
-             builder.Append(info.DeclaringType.GetName());
-             builder.Append(">()[");
+             var functionBuilder=FunctionBuilder;
+             functionBuilder.Append( NewFuncTemplate[length+1],info.ReturnType.GetVariableName(),">(res).value=As<");
+             functionBuilder.Append(info.DeclaringType.GetVariableName(),">(i1).value[");
              for (int i = 0; i < length; i++) {
                  if (!BuildParam(i+1,parameterInfos[i])) return false;
-                 builder.Append(i != length - 1 ? ">()," : ">()");
+                 if(i != length - 1) functionBuilder.Append(',');
              }
-             builder.AppendLine( "]));");
+             functionBuilder.AppendLine( "];");
              return true;
         }
         static bool GenerateSetIndexer(MethodInfo info) {
              var parameterInfos = info.GetParameters();
              var length = parameterInfos.Length;
              if(5<length) return false;
-             var builder=MemberBuilder;
-             builder.Append( ActionTemplate[length+1]);
-             builder.Append(ArgumentValueTemplate[0]);
-             builder.Append(info.DeclaringType.GetName());
-             builder.Append(">()[");
+             var functionBuilder=FunctionBuilder;
+             functionBuilder.Append( NewActionTemplate[length+1],"As<",info.DeclaringType.GetVariableName(),">(i1).value[");
              for (int i = 0; i < length-1; i++) {
                  if (!BuildParam(i+1,parameterInfos[i])) return false;
-                 builder.Append(i != length - 2 ? ">()," : ">()]=");
+                 if(i != length - 2) functionBuilder.Append(',');
              }
+             functionBuilder.Append("]=");
              if (!BuildParam(length,parameterInfos[length-1])) return false;
-             builder.AppendLine(">());");
+             functionBuilder.AppendLine(";");
              return true;
         }
         
         
         
-         static bool GenerateInstanceField(FieldInfo info) {
+         static bool GenerateInstanceField(FieldInfo info,string fullName) {
              if (info.IsDefined(typeof(ObsoleteAttribute))) {
                 return false;
              }
+             var fieldType = info.FieldType;
+             if (fieldType.IsByRefLike) return false;
              var name = info.Name;
              if( BannedNames.Contains(name) )return false;
             var builder=MemberBuilder;
+            var functionBuilder=FunctionBuilder;
              builder.Append(FieldGetterTemplate);
              builder.Append(name);
              builder.Append("\", ");
-             builder.Append(FuncTemplate[1]);
-             builder.Append(ArgumentValueTemplate[0]);
-             builder.Append(info.DeclaringType.GetName());
-             builder.Append( ">().");
-             builder.Append(name);
-             builder.AppendLine( "));");
+             FunctionNameBuilder.Append(fullName,"_get_",name);
+             CopyMemberToAOT();
+             builder.Append(FunctionNameBuilder,");");
+             builder.AppendLine();
+             functionBuilder.AppendNameBuilderAndClear();
+             functionBuilder.Append(NewFuncTemplate[1]);
+             functionBuilder.Append(fieldType.GetVariableName());
+             functionBuilder.Append(">(res).value=As<");
+             functionBuilder.Append(info.DeclaringType.GetVariableName());
+             functionBuilder.Append( ">(i1).value.");
+             functionBuilder.Append(name);
+             functionBuilder.AppendLine(";");
              if (info.IsInitOnly || info.IsLiteral) return true;
             
-             builder.Append(FieldSetterTemplate);
-             builder.Append(name);
-             builder.Append("\", ");
-             builder.Append(ActionTemplate[2]);
-             builder.Append(ArgumentValueTemplate[0]);
-             builder.Append(info.DeclaringType.GetName());
-             builder.Append(">().");
-             builder.Append(name);
-             builder.Append("=");
-             builder.Append(ArgumentValueTemplate[1]);
-             builder.Append(info.FieldType.GetName());
-             builder.AppendLine( ">());");
+             builder.Append(FieldSetterTemplate,name,"\", ");
+             FunctionNameBuilder.Append(fullName,"_set_",name);
+             builder.Append(FunctionNameBuilder,");");
+             builder.AppendLine();
+             AOTMemberBuilder.Append(FieldSetterTemplate,name,"\",&");
+             AOTMemberBuilder.Append(FunctionNameBuilder,");");
+             AOTMemberBuilder.AppendLine();
+             functionBuilder.AppendNameBuilderAndClear();
+             functionBuilder.Append(NewActionTemplate[2],"As<",info.DeclaringType.GetVariableName(),NewArgumentValueTemplate[0]);
+             functionBuilder.Append('.');
+             functionBuilder.Append(name,"= As<",info.FieldType.GetVariableName(),NewArgumentValueTemplate[1]);
+             functionBuilder.AppendLine(";");
              return true;
         }
-        static bool GenerateStaticField(FieldInfo info) {
+        static bool GenerateStaticField(FieldInfo info,string fullName) {
             if (info.IsDefined(typeof(ObsoleteAttribute))) {
                 return false;
             }
@@ -845,103 +1030,122 @@ namespace YS.Generated {
             var name = info.Name;
             if( BannedNames.Contains(name) )return false;
             if (info.IsInitOnly || info.IsLiteral) {
-                builder.Append(ConstTemplate);
-                builder.Append(name);
-                builder.Append(ConstTemplateVariable);
-                builder.Append(info.FieldType.GetName());
-                builder.Append( ">(");
-                builder.Append(info.DeclaringType.GetName());
+                builder.Append(ConstTemplate,name,ConstTemplateVariable,info.FieldType.GetName());
+                builder.Append( ">(",info.DeclaringType.GetName());
                 builder.Append('.');
                 builder.Append(name);
                 builder.AppendLine( "));");
                 return true;
             }
+            var fieldType = info.FieldType;
+            var functionBuilder=FunctionBuilder;
             builder.Append(FieldGetterTemplate);
             builder.Append(name);
             builder.Append("\", ");
-            builder.Append(FuncTemplate[0]);
-            builder.Append(info.DeclaringType.GetName());
-            builder.Append('.');
-            builder.Append(name);
-            builder.AppendLine( "));");
+            FunctionNameBuilder.Append(fullName,"_get_",name);
+            CopyMemberToAOT();
+            builder.Append(FunctionNameBuilder,");");
+            builder.AppendLine();
+            functionBuilder.AppendNameBuilderAndClear();
+            functionBuilder.Append(NewFuncTemplate[0],fieldType.GetVariableName(),">(res).value=",info.DeclaringType.GetName());
+            functionBuilder.Append(".value.",name);
+            functionBuilder.AppendLine(";");
             
-            builder.Append(FieldSetterTemplate);
-            builder.Append(name);
-            builder.Append("\", ");
-            builder.Append(ActionTemplate[1]);
-            builder.Append(info.DeclaringType.GetName());
-            builder.Append('.');
-            builder.Append(name);
-            builder.Append("=");
-            builder.Append(ArgumentValueTemplate[1]);
-            builder.Append(info.FieldType.GetName());
-            builder.AppendLine( ">());");
+            builder.Append(FieldSetterTemplate,name,"\", ");
+            FunctionNameBuilder.Append(fullName,"_set_",name);
+            
+            builder.Append(FunctionNameBuilder,");");
+            builder.AppendLine();
+            AOTMemberBuilder.Append(FieldSetterTemplate,name,"\",&");
+            AOTMemberBuilder.Append(FunctionNameBuilder,");");
+            AOTMemberBuilder.AppendLine();
+            functionBuilder.AppendNameBuilderAndClear();
+            functionBuilder.Append(NewActionTemplate[1]);
+            functionBuilder.Append(info.DeclaringType.GetName());
+            functionBuilder.Append('.');
+            functionBuilder.Append(name,"=As<",info.FieldType.GetVariableName(),NewArgumentValueTemplate[0]);
+            functionBuilder.AppendLine(";");
             return true;
         }
-        static bool GenerateInstanceProperty(PropertyInfo info) {
+        static bool GenerateInstanceProperty(PropertyInfo info,string fullTypeName) {
             if (info.IsDefined(typeof(ObsoleteAttribute))) {
+                MemberBuilder.Clear();
+                AOTMemberBuilder.Clear();
                 return false;
             }
             var builder=MemberBuilder;
             var name = info.Name;
-            if( BannedNames.Contains(name) )return false;
-            if(name=="Item") return false;
+            if( BannedNames.Contains(name) ||name=="Item"){
+                MemberBuilder.Clear();
+                AOTMemberBuilder.Clear();
+                return false;
+            }
+            var functionBuilder=FunctionBuilder;
+            var fieldType=info.PropertyType;
             if (info.CanRead) {
                 builder.Append(PropertyGetterTemplate);
                 builder.Append(name);
                 builder.Append("\", ");
-                builder.Append(FuncTemplate[1]);
-                builder.Append(ArgumentValueTemplate[0]);
-                builder.Append(info.DeclaringType.GetName());
-                builder.Append( ">().");
-                builder.Append(name);
-                builder.AppendLine( "));");
+                FunctionNameBuilder.Append(fullTypeName,"_get_",name);
+                CopyMemberToAOT();
+                builder.Append(FunctionNameBuilder,");");
+                builder.AppendLine();
+                functionBuilder.AppendNameBuilderAndClear();
+                functionBuilder.Append(NewFuncTemplate[1], fieldType.GetVariableName(),">(res).value=As<");
+                functionBuilder.Append(info.DeclaringType.GetVariableName(),">(i1).value.",name);
+                functionBuilder.AppendLine( ";");
             }
             if (info.CanWrite&&info.GetSetMethod(true).IsPublic) {
-                builder.Append(PropertySetterTemplate);
-                builder.Append(name);
-                builder.Append("\", ");
-                builder.Append(ActionTemplate[2]);
-                builder.Append(ArgumentValueTemplate[0]);
-                builder.Append(info.DeclaringType.GetName());
-                builder.Append(">().");
-                builder.Append(name);
-                builder.Append("=");
-                builder.Append(ArgumentValueTemplate[1]);
-                builder.Append(info.PropertyType.GetName());
-                builder.AppendLine( ">());");
+                builder.Append(PropertySetterTemplate,name,"\", ");
+                FunctionNameBuilder.Append(fullTypeName,"_set_",name);
+                builder.Append(FunctionNameBuilder,");");
+                builder.AppendLine();
+                AOTMemberBuilder.Append(PropertySetterTemplate,name,"\",& ");
+                AOTMemberBuilder.Append(FunctionNameBuilder,");");
+                AOTMemberBuilder.AppendLine();
+                
+                functionBuilder.AppendNameBuilderAndClear();
+                functionBuilder.Append(NewActionTemplate[2], "As<");
+                functionBuilder.Append(info.DeclaringType.GetVariableName(),">(i1).value.",name);
+                functionBuilder.Append(" = As<",fieldType.GetVariableName(),">(i2).value");
+                functionBuilder.AppendLine(";");
             }
             return true;
         }
-        static bool GenerateStaticProperty(PropertyInfo info) {
+        static bool GenerateStaticProperty(PropertyInfo info,string fullTypeName) {
             if (info.IsDefined(typeof(ObsoleteAttribute))) {
                 return false;
             }
             var builder=MemberBuilder;
             var name = info.Name;
             if( BannedNames.Contains(name) )return false;
+            var functionBuilder=FunctionBuilder;
+            var fieldType=info.PropertyType;
             if (info.CanRead) {
                 builder.Append(PropertyGetterTemplate);
                 builder.Append(name);
                 builder.Append("\", ");
-                builder.Append(FuncTemplate[0]);
-                builder.Append(info.DeclaringType.GetName());
-                builder.Append('.');
-                builder.Append(name);
-                builder.AppendLine( "));");
+                FunctionNameBuilder.Append(fullTypeName,"_get_",name);
+                CopyMemberToAOT();
+                builder.Append(FunctionNameBuilder,");");
+                builder.AppendLine();
+                functionBuilder.AppendNameBuilderAndClear();
+                functionBuilder.Append(NewFuncTemplate[0], fieldType.GetVariableName(),">(res).value=");
+                functionBuilder.Append(info.DeclaringType.GetName(),".",name);
+                functionBuilder.AppendLine( ";");
             }
             if (info.CanWrite) {
-                builder.Append(PropertySetterTemplate);
-                builder.Append(name);
-                builder.Append("\", ");
-                builder.Append(ActionTemplate[1]);
-                builder.Append(info.DeclaringType.GetName());
-                builder.Append('.');
-                builder.Append(name);
-                builder.Append("=");
-                builder.Append(ArgumentValueTemplate[0]);
-                builder.Append(info.PropertyType.GetName());
-                builder.AppendLine( ">());");
+                builder.Append(PropertySetterTemplate,name,"\", ");
+                FunctionNameBuilder.Append(fullTypeName,"_set_",name);
+                builder.Append(FunctionNameBuilder,");");
+                builder.AppendLine();
+                AOTMemberBuilder.Append(PropertySetterTemplate,name,"\",& ");
+                AOTMemberBuilder.Append(FunctionNameBuilder,");");
+                AOTMemberBuilder.AppendLine();
+                functionBuilder.AppendNameBuilderAndClear();
+                functionBuilder.Append(NewActionTemplate[1], info.DeclaringType.GetName(),".",name);
+                functionBuilder.Append(" = As<",fieldType.GetVariableName(),">(i1).value");
+                functionBuilder.AppendLine(";");
             }
             return true;
         }

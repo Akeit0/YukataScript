@@ -2,19 +2,19 @@
 
 namespace YS.VM {
     public  partial  class VirtualMachine{
-        static void AwaitableVoidPattern(VirtualMachine vm) {
+        static unsafe  void AwaitableVoidPattern(VirtualMachine vm) {
             Variable awaiter;
-            DelegateLibrary.Delegate2s[vm.ReadUshort()].Action(awaiter=vm.ReadVariable(), vm.ReadVariable());
+            DelegateLibrary.GetPtr2(*(vm.CurrentDataPtr)++)(awaiter=vm.ReadVariable(), vm.ReadVariable());
             Variable isCompleted;
-            DelegateLibrary.Delegate2s[vm.ReadUshort()].Action(isCompleted = vm.ReadVariable(), awaiter);
+            DelegateLibrary.GetPtr2(*(vm.CurrentDataPtr)++)(isCompleted = vm.ReadVariable(), awaiter);
             var getResultId = vm.ReadUshort();
             if (isCompleted.As<bool>()) {
                 vm.ReadUshort();
-                DelegateLibrary.Delegate1s[getResultId].Action(awaiter);
+                DelegateLibrary.GetPtr1(*(vm.CurrentDataPtr)++)(awaiter);
             }
             else {
-                var onCompleted = DelegateLibrary.Delegate2s[vm.ReadUshort()].Action;
-                var getResult = DelegateLibrary.Delegate1s[getResultId].Action;
+                var onCompleted = DelegateLibrary.GetPtr2(*(vm.CurrentDataPtr)++);
+                var getResult = DelegateLibrary.GetPtr1(*(vm.CurrentDataPtr)++);
                 vm.SetAsyncState();
                 onCompleted(awaiter, new Variable<Action>(() => {
                     try {

@@ -9,7 +9,7 @@ namespace YS.Instructions {
        
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder,indentLevel);
-            var description = DelegateLibrary.Delegates[vm.ReadUshort()].Data;
+            var description = DelegateLibrary.DelegateDataArray[vm.ReadUshort()];
             builder.Append(description.DeclaringType.Build());  
             builder.Append('.');
             builder.Append(description.MethodName);  
