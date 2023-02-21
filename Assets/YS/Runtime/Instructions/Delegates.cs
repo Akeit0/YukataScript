@@ -6,12 +6,10 @@ namespace YS.Instructions {
     
     
     public sealed class DelegateOp : IInstruction {
-        public void Execute( VirtualMachine vm) {
-            vm.Delegate();
-        }
+       
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder,indentLevel);
-            var description = DelegateLibrary.Delegates[vm.ReadUshort()].Data;
+            var description = DelegateLibrary.DelegateDataArray[vm.ReadUshort()];
             builder.Append(description.DeclaringType.Build());  
             builder.Append('.');
             builder.Append(description.MethodName);  
@@ -19,10 +17,7 @@ namespace YS.Instructions {
         }
     }
     public sealed class Delegate1Op : IInstruction {
-        public void Execute( VirtualMachine vm) {
-            vm.Delegate1();
-        }
-
+        
         public void ToCode(VirtualMachine vm, StringBuilder builder,ref  int indentLevel) {
             IInstruction.AppendIndent(builder,indentLevel);
             var description = DelegateLibrary.Delegate1s[vm.ReadUshort()].Data;
@@ -45,10 +40,7 @@ namespace YS.Instructions {
         }
     }
     public sealed class Delegate2Op : IInstruction {
-        public void Execute( VirtualMachine vm) {
-            vm.Delegate2();
-        }
-
+      
 
         public void ToCode(VirtualMachine vm, StringBuilder builder,ref  int indentLevel) {
             IInstruction.AppendIndent(builder,indentLevel);
@@ -75,9 +67,6 @@ namespace YS.Instructions {
         }
     }
     public sealed class Delegate3Op : IInstruction {
-        public void Execute( VirtualMachine vm) {
-            vm.Delegate3();
-        }
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder,indentLevel);
@@ -107,9 +96,6 @@ namespace YS.Instructions {
     }
 
     public sealed class Delegate4Op : IInstruction {
-        public void Execute(VirtualMachine vm) {
-            vm.Delegate4();
-        }
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             var description = DelegateLibrary.Delegate4s[vm.ReadUshort()].Data;
@@ -140,9 +126,6 @@ namespace YS.Instructions {
     }
 
     public sealed class Delegate5Op : IInstruction {
-        public void Execute( VirtualMachine vm) {
-            vm.Delegate5();
-        }
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             var description = DelegateLibrary.Delegate5s[vm.ReadUshort()].Data;
@@ -174,10 +157,6 @@ namespace YS.Instructions {
         }
     }
     public sealed class Delegate6Op : IInstruction {
-        public void Execute( VirtualMachine vm) {
-            DelegateLibrary.Delegate6s[vm.ReadUshort()].Action(vm.ReadVariable(), vm.ReadVariable(),
-                vm.ReadVariable(),vm.ReadVariable(),vm.ReadVariable(),vm.ReadVariable());
-        }
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
             IInstruction.AppendIndent(builder, indentLevel);
             var description = DelegateLibrary.Delegate6s[vm.ReadUshort()].Data;

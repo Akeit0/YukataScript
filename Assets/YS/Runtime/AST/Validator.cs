@@ -166,18 +166,18 @@ namespace YS.AST {
                 if(targetType.IsPrimitive) {
                     if (targetType == typeof(float) && (srcType == typeof(int))) {
                         context.EmitData(target,src);
-                        context.Emit(FloatToDouble.Id);
+                        context.Emit(VM.Instructions.FloatToDouble);
                         return ;
                     }
                     if (targetType == typeof(double)) {
                         if (srcType == typeof(int)) {
                             context.EmitData(target,src);
-                            context.Emit(IntToDouble.Id);
+                            context.Emit(VM.Instructions.IntToDouble);
                             return ;
                         }
                         if(srcType == typeof(float)){
                             context.EmitData(target,src);
-                            context.Emit(FloatToDouble.Id);
+                            context.Emit(VM.Instructions.FloatToDouble);
                             return ;
                         }
                     }  
@@ -209,18 +209,18 @@ namespace YS.AST {
                 if(targetType.IsPrimitive) {
                     if (targetType == typeof(float) && (srcType == typeof(int))) {
                         context.EmitData(target.id,src.id);
-                        context.Emit(FloatToDouble.Id);
+                        context.Emit(VM.Instructions.FloatToDouble);
                         return ;
                     }
                     if (targetType == typeof(double)) {
                         if (srcType == typeof(int)) {
                             context.EmitData(target.id,src.id);
-                            context.Emit(IntToDouble.Id);
+                            context.Emit(VM.Instructions.IntToDouble);
                             return ;
                         }
                         if(srcType == typeof(float)){
                             context.EmitData(target.id,src.id);
-                            context.Emit(FloatToDouble.Id);
+                            context.Emit(VM.Instructions.FloatToDouble);
                             return ;
                         }
                     }  
@@ -314,21 +314,21 @@ namespace YS.AST {
                 case 2: {
                     var newValueId = context.AddVariable<double>().id;
                     context.EmitData(newValueId, result);
-                    context.Emit(IntToDouble.Id);
+                    context.Emit(VM.Instructions.IntToDouble);
                     context.EmitCopy(target.id, newValueId);
                     return;
                 }
                 case 3: {
                     var newValueId = context.AddVariable<double>().id;
                     context.EmitData(newValueId, result);
-                    context.Emit(FloatToDouble.Id);
+                    context.Emit(VM.Instructions.FloatToDouble);
                     context.EmitCopy(target.id, newValueId);
                     return;
                 }
                 case 4: {
                     var newValueId = context.AddVariable<float>().id;
                     context.EmitData(newValueId, result);
-                    context.Emit(IntToFloat.Id);
+                    context.Emit(VM.Instructions.IntToFloat);
                     context.EmitCopy(target.id, newValueId);
                     return;
                 }
@@ -418,14 +418,14 @@ namespace YS.AST {
                         var newValueId = context.AddVariable<double>().id;
                         context.EmitData(newValueId,arguments[i].Id);
                         arguments[i] = newValueId;
-                        context.Emit(IntToDouble.Id);
+                        context.Emit(VM.Instructions.IntToDouble);
                         break;
                     }
                     case 3: {
                         var newValueId = context.AddVariable<double>().id;
                         context.EmitData(newValueId, arguments[i].Id);
                         arguments[i] = newValueId;
-                        context.Emit(FloatToDouble.Id);
+                        context.Emit(VM.Instructions.FloatToDouble);
                         break;
                     }
                     case 4: {
@@ -439,7 +439,7 @@ namespace YS.AST {
                             var newValueId = context.AddVariable<float>().id;
                             context.EmitData(newValueId, argument.Id);
                             arguments[i] = newValueId;
-                            context.Emit(IntToFloat.Id);
+                            context.Emit(VM.Instructions.IntToFloat);
                         }
                         break;
                     }
@@ -497,14 +497,14 @@ namespace YS.AST {
                         var newValueId = context.AddVariable<double>().id;
                         context.EmitData(newValueId,arguments[i].Id);
                         arguments[i] = newValueId;
-                        context.Emit(IntToDouble.Id);
+                        context.Emit(VM.Instructions.IntToDouble);
                         break;
                     }
                     case 3: {
                         var newValueId = context.AddVariable<double>().id;
                         context.EmitData(newValueId,arguments[i].Id);
                         arguments[i] = newValueId;
-                        context.Emit(FloatToDouble.Id);
+                        context.Emit(VM.Instructions.FloatToDouble);
                         break;
                     }
                     case 4: {
@@ -524,7 +524,7 @@ namespace YS.AST {
                             var newValueId = context.AddVariable<float>().id;
                             context.EmitData(newValueId, argument.Id);
                             arguments[i] = newValueId;
-                            context.Emit(IntToFloat.Id);
+                            context.Emit(VM.Instructions.IntToFloat);
                         }
                         break;
                     }

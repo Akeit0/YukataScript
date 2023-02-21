@@ -17,7 +17,7 @@ namespace YS.AST.Statements {
 
         public void Compile(CompilingContext context) {
             context.MoveToNextStatement();
-           context.Emit(Return.Id);
+           context.Emit(VM.Instructions.Return);
         }
     }
 }

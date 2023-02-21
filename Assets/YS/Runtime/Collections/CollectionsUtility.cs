@@ -17,7 +17,6 @@ namespace YS.Collections {
             }
             array[count++] = element;
         }
-
         public static unsafe RentSpan<T> RentUnmanagedSpan<T>(int length) where T : unmanaged {
             var size = sizeof(T);
             var array = ArrayPool<byte>.Shared.Rent(length * size);

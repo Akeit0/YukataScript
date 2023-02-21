@@ -1,17 +1,21 @@
-﻿using System;
+﻿#if !UNITY_EDITOR&&ENABLE_IL2CPP
+#define AOT
+#endif
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-
+using UnityEngine;
 using YS.Collections;
 using YS.Instructions;
 using YS.Modules;
-
 namespace YS.VM {
   
-    public static class DelegateLibrary {
+    public static unsafe class DelegateLibrary {
 
         public static Dictionary<Type, ushort> AwaiterIdDictionary=new (){
             {typeof(UniTime), 0},
@@ -39,67 +43,107 @@ namespace YS.VM {
         public static (object Delegate, MethodData MethodData)FromID(MethodID functionId) {
             var length = functionId.InstructionId;
             var index = functionId.Index;
-            switch (length) {
-                case 0: return Delegates[index];
-                case 1: return Delegate1s[index];
-                case 2: return Delegate2s[index];
-                case 3: return Delegate3s[index];
-                case 4: return Delegate4s[index];
-                case 5: return Delegate5s[index];
-                case 6: return Delegate6s[index];
-            }
-            return length == MethodInfoInvoker.Id ? MethodInfos[index] : default;
+            // switch (length) {
+            //     case 0: return Delegates[index];
+            //     case 1: return Delegate1s[index];
+            //     case 2: return Delegate2s[index];
+            //     case 3: return Delegate3s[index];
+            //     case 4: return Delegate4s[index];
+            //     case 5: return Delegate5s[index];
+            //     case 6: return Delegate6s[index];
+            // }
+            return length == 7 ? MethodInfos[index] : default;
         }
         public static (MethodInfo MethodInfo,MethodData Data)[] MethodInfos=new (MethodInfo,MethodData)[16];
        static int methodInfoCount;
-        
-        public static (Action Action,MethodData Data)[] Delegates=new (Action,MethodData)[16];
+       public static MethodData[] DelegateDataArray=new MethodData[16];
        static int action0Count;
        public static int ActionCount => action0Count;
-       public static (Action<Variable> Action,MethodData Data)[] Delegate1s=new (Action<Variable>,MethodData)[16];
-       static int action1Count;
-       public static int Action1Count => action1Count;
-       public static (Action<Variable,Variable> Action,MethodData Data)[] Delegate2s=new (Action<Variable,Variable>,MethodData)[16];
-       static int action2Count;
-       public static int Action2Count => action1Count;
-       public static (Action<Variable,Variable,Variable> Action,MethodData Data)[] Delegate3s=new (Action<Variable,Variable,Variable>,MethodData)[16];
-       static int action3Count;
-       public static (Action<Variable,Variable,Variable,Variable> Action,MethodData Data)[] Delegate4s=new (Action<Variable,Variable,Variable,Variable>,MethodData)[16];
-       static int action4Count;
-       public static (Action<Variable,Variable,Variable,Variable,Variable> Action,MethodData Data)[] Delegate5s=new (Action<Variable,Variable,Variable,Variable,Variable>,MethodData)[16];
-       static int action5Count;
-       public static (Action<Variable,Variable,Variable,Variable,Variable,Variable> Action,MethodData Data)[] Delegate6s=new (Action<Variable,Variable,Variable,Variable,Variable,Variable>,MethodData)[16];
-       static int action6Count;
+#if AOT
+        public static delegate*<void> [] DelegatePtrArray=new delegate*<void>[16];
+        public static delegate*<void> GetPtr0(ushort index) => DelegatePtrArray[index];
+#else
+        public static IntPtr [] DelegatePtrArray=new IntPtr[16];
+       
+        public static delegate*<void> GetPtr0(ushort index) => (delegate*<void> )DelegatePtrArray[index];
+#endif
         
+      
+       
+       
+       public static (IntPtr Action,MethodData Data)[] Delegate1s=new (IntPtr,MethodData)[16];
+       static int action1Count;
+       public static delegate*<Variable,void> GetPtr1(ushort index) => (delegate*<Variable,void>)Delegate1s[index].Action;
+       public static int Action1Count => action1Count;
+       public static (IntPtr Action,MethodData Data)[] Delegate2s=new (IntPtr,MethodData)[16];
+       static int action2Count;
+       public static delegate*<Variable,Variable,void> GetPtr2(ushort index) => (delegate*<Variable,Variable,void>)Delegate2s[index].Action;
+       public static int Action2Count => action1Count;
+       public static (IntPtr Action,MethodData Data)[] Delegate3s=new ( IntPtr,MethodData)[16];
+       static int action3Count;
+       public static delegate*<Variable,Variable,Variable,void> GetPtr3(ushort index) => (delegate*<Variable,Variable,Variable,void>)Delegate3s[index].Action;
+       
+       public static (IntPtr Action,MethodData Data)[] Delegate4s=new (IntPtr,MethodData)[16];
+       static int action4Count;
+       public static delegate*<Variable,Variable,Variable,Variable,void> GetPtr4(ushort index) => (delegate*<Variable,Variable,Variable,Variable,void>)Delegate4s[index].Action;
+       public static (IntPtr Action,MethodData Data)[] Delegate5s=new (IntPtr,MethodData)[16];
+       static int action5Count;
+       public static delegate*<Variable,Variable,Variable,Variable,Variable,void> GetPtr5(ushort index) => (delegate*<Variable,Variable,Variable,Variable,Variable,void>)Delegate5s[index].Action;
+
+       public static (IntPtr Action,MethodData Data)[] Delegate6s=new (IntPtr,MethodData)[16];
+      
+       static int action6Count;
+       public static delegate*<Variable,Variable,Variable,Variable,Variable,Variable,void> GetPtr6(ushort index) => (delegate*<Variable,Variable,Variable,Variable,Variable,Variable,void>)Delegate6s[index].Action;
+
         
        public static MethodID Add(MethodData function,MethodInfo methodInfo) {
            CollectionsUtility.Add(ref MethodInfos,ref methodInfoCount, (methodInfo,function));
-           return new MethodID ( (ushort) (methodInfoCount - 1),MethodInfoInvoker.Id);
-        }
-        public static ushort Add(MethodData function,Delegate action,int paramLength) {
-            switch (paramLength) {
-                case 0:CollectionsUtility.Add(ref Delegates,ref action0Count, ((Action)action,function));
-                     return (ushort) (action0Count - 1);
-                case 1:CollectionsUtility.Add(ref Delegate1s,ref action1Count, ((Action<Variable>)action,function));
-                     return (ushort) (action1Count - 1);
-                case 2:CollectionsUtility.Add(ref Delegate2s,ref action2Count, ((Action<Variable,Variable>)action,function));
-                     return (ushort) (action2Count - 1);
-                case 3:CollectionsUtility.Add(ref Delegate3s,ref action3Count, ((Action<Variable,Variable,Variable>)action,function));
-                     return (ushort) (action3Count - 1);
-                case 4:CollectionsUtility.Add(ref Delegate4s,ref action4Count, ((Action<Variable,Variable,Variable,Variable>)action,function));
-                     return (ushort) (action4Count - 1);
-                case 5:CollectionsUtility.Add(ref Delegate5s,ref action5Count, ((Action<Variable,Variable,Variable,Variable,Variable>)action,function));
-                     return (ushort) (action5Count - 1);
-                case 6:CollectionsUtility.Add(ref Delegate6s,ref action6Count, ((Action<Variable,Variable,Variable,Variable,Variable,Variable>)action,function));
-                     return (ushort) (action6Count - 1);
-                
-            }
-            
-            
-            return default;
+           return new MethodID ( (ushort) (methodInfoCount - 1),7);
         }
        
-        
+#if AOT
+       public static ushort Add(MethodData data,delegate*<void> pointer) {
+            Add(ref DelegateDataArray, action0Count,  data);
+            if (DelegatePtrArray.Length == action0Count) {
+                var newArray = new delegate*<void>[action0Count * 2];
+                for (int i = 0; i < action0Count; i++) {
+                    newArray[i] = DelegatePtrArray[i];
+                }
+                DelegatePtrArray = newArray;
+            }
+            return (ushort) (action0Count++);
+       }  
+#endif
+        public static ushort Add(MethodData data,IntPtr ptr,int argCount) {
+            switch (argCount) {
+#if !AOT
+                case 0: {
+                    Add(ref DelegateDataArray, action0Count,  data);
+                    Add(ref DelegatePtrArray, action0Count,  ptr);
+                    return (ushort) (action0Count++);
+                }
+#endif
+                case 1: Add(ref Delegate1s, action1Count, (ptr, data));
+                    return (ushort) (action1Count++ );
+                case 2:Add(ref Delegate2s, action2Count, (ptr, data));
+                    return (ushort) (action2Count++ );
+                case 3: Add(ref Delegate3s, action3Count, (ptr, data));
+                    return (ushort) (action3Count++ );
+                case 4: Add(ref Delegate4s, action4Count, (ptr, data));
+                    return (ushort) (action4Count++ );
+                case 5:Add(ref Delegate5s, action5Count, (ptr, data));
+                    return (ushort) (action5Count++ );
+                case 6:Add(ref Delegate6s, action6Count, (ptr, data));
+                    return (ushort) (action6Count++ );
+            }
+            return default;
+        }
+        static void Add<T>(ref T[] array, int  count, T element,float factor=2) {
+            if(array.Length==count) {
+                Array.Resize(ref array,(int) (array.Length * factor));
+            }
+            array[count] = element;
+        }
         
     }
   

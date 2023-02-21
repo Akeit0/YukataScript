@@ -1,12 +1,12 @@
-﻿using System;
+﻿
+using System;
 using System.Reflection;
 using System.Text;
 using YS.Modules;
 using YS.VM;
 
-namespace YS.Instructions {
-    public class MethodInfoInvoker:IInstruction {
-
+namespace YS.VM {
+    public partial class VirtualMachine {
         [ThreadStatic]
         static object[][] _arguments;
 
@@ -60,7 +60,16 @@ namespace YS.Instructions {
             array[4] = element5;
             return array;
         }
-        
+
+
+        static void MethodInfoInvoke(VirtualMachine vm) {
+            var data = DelegateLibrary.MethodInfos[vm.ReadUshort()];
+            if (data.Data.HasReturnValue)
+                CallFunc(vm, data);
+            else  
+                CallAction(vm,data);
+            
+        }
 
         static void CallAction(VirtualMachine vm, (MethodInfo MethodInfo,MethodData Data ) data) {
             var description = data.Data;
@@ -463,50 +472,6 @@ namespace YS.Instructions {
                         return;
                     }
                 }
-            }
-        }
-        public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
-            IInstruction.AppendIndent(builder,indentLevel);
-            switch (vm.ReadUshort()) {
-                case 0:   IInstruction.AppendVariable(builder, vm);
-                    builder.Append("()");
-                    return;
-                case 1: IInstruction.AppendVariable(builder, vm);
-                    builder.Append('(');
-                    IInstruction.AppendVariable(builder, vm);
-                    builder.Append(')');
-                    return;
-                case 2: IInstruction.AppendVariable(builder, vm);
-                    builder.Append('(');
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariable(builder, vm);
-                    builder.Append(')');
-                    return;
-                case 3: IInstruction.AppendVariable(builder, vm);
-                    builder.Append('(');
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariable(builder, vm);
-                    builder.Append(')');
-                    return;
-                case 4:IInstruction.AppendVariable(builder, vm);
-                    builder.Append('(');
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariable(builder, vm);
-                    builder.Append(')');
-                    return;
-                case 5: IInstruction.AppendVariable(builder, vm);
-                    builder.Append('(');
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariableAndComma(builder, vm);
-                    IInstruction.AppendVariable(builder, vm);
-                    builder.Append(')');
-                    return;
-                
             }
         }
     }

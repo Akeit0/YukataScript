@@ -11,8 +11,6 @@ using YS.Modules;
 namespace YS.VM {
     
     public unsafe partial class VirtualMachine {
-        public IntegratedEngine Owner;
-        
         public byte[] Codes;
         public int OpCount { get; private set; } = 0;
         public ushort[] UnmanagedData;
@@ -285,12 +283,12 @@ namespace YS.VM {
         
         public void EmitCopy(ushort target,ushort src) {
             EmitData(target,src);
-            Emit(Copy.Id);
+            Emit((byte)Instructions.Copy);
         }
         public void EmitReadInt(ushort target,int value) {
             EmitData(target);
             EmitData(value);
-            Emit(Read32.Id);
+            Emit((byte)Instructions.Read32);
         }
         
         

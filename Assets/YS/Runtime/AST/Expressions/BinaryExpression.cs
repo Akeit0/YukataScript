@@ -106,7 +106,7 @@ namespace YS.AST.Expressions {
              Left.Compile(data,context);
             context.EmitData(isAnd?(ushort)1: (ushort)0);
             context.EmitData(data.Item1);
-            context.Emit(IfInstruction.Id);
+            context.Emit(VM.Instructions.If);
             var d = context.EnterToScope();
             Right.Compile(data, context);
             context.ExitFromScope(d);
@@ -116,7 +116,7 @@ namespace YS.AST.Expressions {
             Left.Compile(data,context);
             context.EmitData(isAnd?(ushort)1: (ushort)0);
             context.EmitData(data.id);
-            context.Emit(IfInstruction.Id);
+            context.Emit(VM.Instructions.If);
             var d = context.EnterToScope();
             Right.Compile(data, context);
             context.ExitFromScope(d);

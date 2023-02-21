@@ -1,4 +1,7 @@
-﻿using System;
+﻿#if !UNITY_EDITOR&&ENABLE_IL2CPP
+#define AOT
+#endif
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -6,8 +9,9 @@ using YS.Collections;
 using YS.Modules;
 using YS.VM;
 namespace YS {
+    [UnityEngine.Scripting.Preserve]
     
-    public sealed class TypeModule {
+    public sealed unsafe class TypeModule {
         public StringDictionary<object> Members { get; set; } = new StringDictionary<object>(32);
         public NameSpace NameSpace;
         public  Type DeclaringType { get; }
@@ -114,6 +118,16 @@ namespace YS {
             }
             else Members[name] = function;
         }
+#if !AOT
+        static IntPtr GetFunctionPtr(Delegate @delegate) => @delegate.Method.MethodHandle.GetFunctionPointer();
+#else
+        static IntPtr ToPtr(delegate*<Variable,void> action) =>(IntPtr)action;
+        static IntPtr ToPtr(delegate*<Variable,Variable,void> action) =>(IntPtr)action;
+        static IntPtr ToPtr(delegate*<Variable,Variable,Variable,void>action) =>(IntPtr)action;
+        static IntPtr ToPtr(delegate*<Variable,Variable,Variable,Variable,void> action) =>(IntPtr)action;
+        static IntPtr ToPtr(delegate*<Variable,Variable,Variable,Variable,Variable,void> action) =>(IntPtr)action;
+        static IntPtr ToPtr(delegate*<Variable,Variable,Variable,Variable,Variable,Variable,void> action) =>(IntPtr)action;
+#endif 
         public void Register(string name,MethodData function) {
             if(function==null)return;
             if (Members.TryGetValue(name,out var member)) {
@@ -135,47 +149,94 @@ namespace YS {
             Members[name] = variable;
         }
        ConstructorInfo GetConstructorInfo(Type[] types) => DeclaringType.GetConstructor(types);
+#if !AOT
        public void RegisterConstructor(Action<Variable> action) {
-           Register(new MethodData(GetConstructorInfo(Array.Empty<Type>()),action));
+           Register(new MethodData(GetConstructorInfo(Array.Empty<Type>()),GetFunctionPtr(action)));
        }
        public void RegisterConstructor(Type type,Action<Variable,Variable>  action) {
-           Register(new MethodData(GetConstructorInfo(Util.Types(type)),action));
+           Register(new MethodData(GetConstructorInfo(Util.Types(type)),GetFunctionPtr(action)));
        }
        public void RegisterConstructor(Type arg1,Type arg2,Action<Variable,Variable,Variable> action) {
-           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2)),action));
+           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2)),GetFunctionPtr(action)));
        }
        public void RegisterConstructor(Type arg1,Type arg2,Type arg3,Action<Variable,Variable,Variable,Variable> action) {
-           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2,arg3)),action));
+           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2,arg3)),GetFunctionPtr(action)));
        }
        public void RegisterConstructor(Type arg1,Type arg2,Type arg3,Type arg4,Action<Variable,Variable,Variable,Variable,Variable> action) {
-           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2,arg3,arg4)),action));
+           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2,arg3,arg4)),GetFunctionPtr(action)));
        }
        
        public void RegisterFieldSetter(string name,Action<Variable,Variable>  action) {
-           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.InstancedSetter,action));
+           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.InstancedSetter,GetFunctionPtr(action)));
        }
        public void RegisterFieldGetter(string name,Action<Variable,Variable>  action) {
-           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.InstancedGetter,action));
+           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.InstancedGetter,GetFunctionPtr(action)));
        }
        public void RegisterFieldSetter(string name,Action<Variable>  action) {
-           Register(name,  MethodData.New(DeclaringType.GetField(name),FieldType.StaticSetter,action));
+           Register(name,  MethodData.New(DeclaringType.GetField(name),FieldType.StaticSetter,GetFunctionPtr(action)));
        }
        public void RegisterFieldGetter(string name,Action<Variable>  action) {
-           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.StaticGetter,action));
+           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.StaticGetter,GetFunctionPtr(action)));
        }
        public void RegisterPropertySetter(string name,Action<Variable,Variable>  action) {
-           Register(name, new MethodData(GetMethodInfo("set_"+name),action));
+           Register(name, new MethodData(GetMethodInfo("set_"+name),GetFunctionPtr(action)));
        }
        
        public void RegisterPropertyGetter(string name,Action<Variable,Variable>  action) {
-           Register(name,new MethodData(GetMethodInfo("get_"+name),action));
+           Register(name,new MethodData(GetMethodInfo("get_"+name),GetFunctionPtr(action)));
        }
        public void RegisterPropertySetter(string name,Action<Variable>  action) {
-           Register(name,new MethodData(GetMethodInfo("set_"+name),action));
+           Register(name,new MethodData(GetMethodInfo("set_"+name),GetFunctionPtr(action)));
        }
-       public void RegisterPropertyGetter(string name,Action<Variable>  action) {
-           Register(name,new MethodData(GetMethodInfo("get_"+name),action));
+
+       public void RegisterPropertyGetter(string name, Action<Variable> action) {
+           Register(name, new MethodData(GetMethodInfo("get_" + name), GetFunctionPtr(action)));
        }
+#else
+        public void RegisterConstructor(delegate*<Variable,void> action) {
+           Register(new MethodData(GetConstructorInfo(Array.Empty<Type>()),ToPtr(action)));
+       }
+       public void RegisterConstructor(Type type,delegate*<Variable,Variable,void>  action) {
+           Register(new MethodData(GetConstructorInfo(Util.Types(type)),ToPtr(action)));
+       }
+       public void RegisterConstructor(Type arg1,Type arg2,delegate*<Variable,Variable,Variable,void> action) {
+           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2)),ToPtr(action)));
+       }
+       public void RegisterConstructor(Type arg1,Type arg2,Type arg3,delegate*<Variable,Variable,Variable,Variable,void> action) {
+           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2,arg3)),ToPtr(action)));
+       }
+       public void RegisterConstructor(Type arg1,Type arg2,Type arg3,Type arg4,delegate*<Variable,Variable,Variable,Variable,Variable,void> action) {
+           Register(new MethodData(GetConstructorInfo(Util.Types(arg1,arg2,arg3,arg4)),ToPtr(action)));
+       }
+       
+       public void RegisterFieldSetter(string name,delegate*<Variable,Variable,void>  action) {
+           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.InstancedSetter,ToPtr(action)));
+       }
+       public void RegisterFieldGetter(string name,delegate*<Variable,Variable,void>  action) {
+           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.InstancedGetter,ToPtr(action)));
+       }
+       public void RegisterFieldSetter(string name,delegate*<Variable,void>  action) {
+           Register(name,  MethodData.New(DeclaringType.GetField(name),FieldType.StaticSetter,ToPtr(action)));
+       }
+       public void RegisterFieldGetter(string name,delegate*<Variable,void>  action) {
+           Register(name, MethodData.New(DeclaringType.GetField(name),FieldType.StaticGetter,ToPtr(action)));
+       }
+       public void RegisterPropertySetter(string name,delegate*<Variable,Variable,void>  action) {
+           Register(name, new MethodData(GetMethodInfo("set_"+name),ToPtr(action)));
+       }
+       
+       public void RegisterPropertyGetter(string name,delegate*<Variable,Variable,void>  action) {
+           Register(name,new MethodData(GetMethodInfo("get_"+name),ToPtr(action)));
+       }
+       public void RegisterPropertySetter(string name,delegate*<Variable,void>  action) {
+           Register(name,new MethodData(GetMethodInfo("set_"+name),ToPtr(action)));
+       }
+
+       public void RegisterPropertyGetter(string name, delegate*<Variable,void> action) {
+           Register(name, new MethodData(GetMethodInfo("get_" + name), ToPtr(action)));
+       }
+
+#endif
        
        MethodInfo GetMethodInfo(string name,Type[] types=null) {
            if(_methodsDictionary.TryGetValue(name,out var o))
@@ -204,97 +265,150 @@ namespace YS {
            
            return DeclaringType.GetMethod(name,types??Array.Empty<Type>());
        }
+#if !AOT
+        public void RegisterMethod0(string name,Action action) {
+            Register(new MethodData(DeclaringType,MethodType.Static,name,null,null,GetFunctionPtr(action)));
+        }
+        public void RegisterMethod1(string name,Action<Variable> action) {
+            Register(new MethodData(GetMethodInfo(name),GetFunctionPtr(action)));
+        }
+        public void RegisterMethod2(string name,Action<Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name),GetFunctionPtr(action)));
+        }
+        public void RegisterMethod3(string name,Action<Variable,Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name),GetFunctionPtr(action)));
+        }
+        public void RegisterMethod4(string name,Action<Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name),GetFunctionPtr(action)));
+        }
+        public void RegisterMethod5(string name,Action<Variable,Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name),GetFunctionPtr(action)));
+        }
        
-        public void RegisterMethod(string name,Action action) {
-            Register(new MethodData(DeclaringType,MethodType.Static,name,null,null,action));
+        
+        public void RegisterMethod0(string name,Type[] types,Action action) {
+            Register(new MethodData(GetMethodInfo(name,types),GetFunctionPtr(action)));
         }
-        public void RegisterMethod(string name,Action<Variable> action) {
-            Register(new MethodData(GetMethodInfo(name),action));
+        public void RegisterMethod1(string name,Type[] types,Action<Variable> action) {
+            Register(new MethodData(GetMethodInfo(name,types),GetFunctionPtr(action)));
         }
-        public void RegisterMethod(string name,Action<Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name),action));
-        }
-        public void RegisterMethod(string name,Action<Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name),action));
-        }
-        public void RegisterMethod(string name,Action<Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name),action));
-        }
-        public void RegisterMethod(string name,Action<Variable,Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name),action));
-        }
-        public void RegisterMethod(string name,Action<Variable,Variable,Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name),action));
+        public void RegisterMethod2(string name,Type[] type,Action<Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name,type),GetFunctionPtr(action)));
         }
         
-        public void RegisterMethod(string name,Type[] types,Action action) {
-            Register(new MethodData(GetMethodInfo(name,types),action));
+        public void RegisterMethod3(string name,Type[] type,Action<Variable,Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name,type),GetFunctionPtr(action)));
         }
-        public void RegisterMethod(string name,Type[] types,Action<Variable> action) {
-            Register(new MethodData(GetMethodInfo(name,types),action));
+        public void RegisterMethod4(string name,Type[] type,Action<Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name,type),GetFunctionPtr(action)));
         }
-        public void RegisterMethod(string name,Type[] type,Action<Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name,type),action));
+        public void RegisterMethod5(string name,Type[] type,Action<Variable,Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name,type),GetFunctionPtr(action)));
         }
-        
-        public void RegisterMethod(string name,Type[] type,Action<Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name,type),action));
-        }
-        public void RegisterMethod(string name,Type[] type,Action<Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name,type),action));
-        }
-        public void RegisterMethod(string name,Type[] type,Action<Variable,Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name,type),action));
-        }
-        public void RegisterMethod(string name,Type[] type,Action<Variable,Variable,Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(GetMethodInfo(name,type),action));
+        public void RegisterMethod6(string name,Type[] type,Action<Variable,Variable,Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(GetMethodInfo(name,type),GetFunctionPtr(action)));
         }
         
         public void RegisterMethod(MethodInfo methodInfo) {
             Register(new MethodData(methodInfo));
         }
-        public void RegisterMethod(MethodInfo methodInfo,Action action) {
-            Register(new MethodData(methodInfo,action));
+        public void RegisterMethod0(MethodInfo methodInfo,Action action) {
+            Register(new MethodData(methodInfo,GetFunctionPtr(action)));
         }
-        public void RegisterMethod(MethodInfo methodInfo,Action<Variable> action) {
-            Register(new MethodData(methodInfo,action));
+        public void RegisterMethod1(MethodInfo methodInfo,Action<Variable> action) {
+            Register(new MethodData(methodInfo,GetFunctionPtr(action)));
         }
-        public void RegisterMethod(MethodInfo methodInfo,Action<Variable,Variable> action) {
-            Register(new MethodData(methodInfo,action));
+        public void RegisterMethod2(MethodInfo methodInfo,Action<Variable,Variable> action) {
+            Register(new MethodData(methodInfo,GetFunctionPtr(action)));
         }
-        public void RegisterMethod(MethodInfo methodInfo,Action<Variable,Variable,Variable> action) {
-            Register(new MethodData(methodInfo,action));
+        public void RegisterMethod3(MethodInfo methodInfo,Action<Variable,Variable,Variable> action) {
+            Register(new MethodData(methodInfo,GetFunctionPtr(action)));
         }
-        public void RegisterMethod(MethodInfo methodInfo,Action<Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(methodInfo,action));
+        public void RegisterMethod4(MethodInfo methodInfo,Action<Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(methodInfo,GetFunctionPtr(action)));
         }
-        public void RegisterMethod(MethodInfo methodInfo,Action<Variable,Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(methodInfo,action));
+        public void RegisterMethod5(MethodInfo methodInfo,Action<Variable,Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(methodInfo,GetFunctionPtr(action)));
         }
-        public void RegisterMethod(MethodInfo methodInfo,Action<Variable,Variable,Variable,Variable,Variable,Variable> action) {
-            Register(new MethodData(methodInfo,action));
+        public void RegisterMethod6(MethodInfo methodInfo,Action<Variable,Variable,Variable,Variable,Variable,Variable> action) {
+            Register(new MethodData(methodInfo,GetFunctionPtr(action)));
         }
-        // public void RegisterArithmeticMethod(string name,Type returnType,Action<Variable,Variable,Variable> action) {
-        //     Register(new MethodData(new MethodData(DeclaringType,MethodType.Static,name,returnType,ArithmeticBinaryParametersCache),action));
-        // }
-        // public void RegisterComparisonMethod(string name,Action<Variable,Variable,Variable> action) {
-        //     Register(new MethodData(new MethodData(DeclaringType,MethodType.Static,name,typeof(bool),ArithmeticBinaryParametersCache),action));
-        // }
-        // public void RegisterArithmeticMethod(string name,Type returnType,Action<Variable,Variable> action) {
-        //     Register(new MethodData(new MethodData(DeclaringType,MethodType.Static,name,returnType,ArithmeticUnaryParametersCache),action));
-        // }
-        // public void RegisterArithmeticMethod(string name,Action<Variable,Variable,Variable> action) {
-        //     Register(new MethodData(new MethodData(DeclaringType,MethodType.Static,name,DeclaringType,ArithmeticBinaryParametersCache),action));
-        // }
-        // public void RegisterArithmeticMethod(string name,Action<Variable,Variable> action) {
-        //     Register(new MethodData(new MethodData(DeclaringType,MethodType.Static,name,DeclaringType,ArithmeticUnaryParametersCache),action));
-        // }
-
-        private ParamDescription[] ArithmeticBinaryParametersCache=>_arithmeticBinaryParametersCache??=new ParamDescription[]{new ("a",DeclaringType),new ("b",DeclaringType)};
-        private ParamDescription[] _arithmeticBinaryParametersCache;
-         private ParamDescription[] ArithmeticUnaryParametersCache=>_arithmeticUnaryParametersCache??=new ParamDescription[]{new ("a",DeclaringType)};
-        private ParamDescription[] _arithmeticUnaryParametersCache;
+        public void RegisterIncrement(string paramName,Action<Variable,Variable> prefix,Action<Variable,Variable> postFix) {
+            var (prefixData, postFixData) =
+                MethodData.NewRefUnary(DeclaringType, paramName,true,GetFunctionPtr(prefix) , GetFunctionPtr(postFix));
+            Register( prefixData);
+            Register( postFixData);
+        }
+        public void RegisterDecrement(string paramName,Action<Variable,Variable> prefix,Action<Variable,Variable> postFix) {
+            var (prefixData, postFixData) =
+                MethodData.NewRefUnary(DeclaringType, paramName,false, GetFunctionPtr(prefix), GetFunctionPtr(postFix));
+            Register( prefixData);
+            Register( postFixData);
+        }
+#else
+    public void RegisterMethod0(string name,delegate*<void> action) {
+            Register(new MethodData(DeclaringType,MethodType.Static,name,null,null,action));
+        }
+        public void RegisterMethod1(string name,delegate*<Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name),ToPtr(action)));
+        }
+     
+        public void RegisterMethod2(string name,delegate*<Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name),ToPtr(action)));
+        }
+       
+        public void RegisterMethod3(string name,delegate*<Variable,Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name),ToPtr(action)));
+        }
+       
+        public void RegisterMethod4(string name,delegate*<Variable,Variable,Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name),ToPtr(action)));
+        }
+        public void RegisterMethod5(string name,delegate*<Variable,Variable,Variable,Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name),ToPtr(action)));
+        }
+       
         
+        public void RegisterMethod0(string name,Type[] types,delegate*<void>  action) {
+            Register(new MethodData(GetMethodInfo(name,types),action));
+        }
+        public void RegisterMethod1(string name,Type[] types,delegate*<Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name,types),ToPtr(action)));
+        }
+        public void RegisterMethod2(string name,Type[] type,delegate*<Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name,type),ToPtr(action)));
+        }
+        
+        public void RegisterMethod3(string name,Type[] type,delegate*<Variable,Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name,type),ToPtr(action)));
+        }
+        public void RegisterMethod4(string name,Type[] type,delegate*<Variable,Variable,Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name,type),ToPtr(action)));
+        }
+        public void RegisterMethod5(string name,Type[] type,delegate*<Variable,Variable,Variable,Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name,type),ToPtr(action)));
+        }
+        public void RegisterMethod6(string name,Type[] type,delegate*<Variable,Variable,Variable,Variable,Variable,Variable,void> action) {
+            Register(new MethodData(GetMethodInfo(name,type),ToPtr(action)));
+        }
+        
+        public void RegisterMethod(MethodInfo methodInfo) {
+            Register(new MethodData(methodInfo));
+        }
+        // public void RegisterIncrement(string paramName,delegate*<Variable,Variable,void> prefix,delegate*<Variable,Variable,void> postFix) {
+        //     var (prefixData, postFixData) =
+        //         MethodData.NewRefUnary(DeclaringType, paramName,true,GetFunctionPtr(prefix) , GetFunctionPtr(postFix));
+        //     Register( prefixData);
+        //     Register( postFixData);
+        // }
+        // public void RegisterDecrement(string paramName,Action<Variable,Variable> prefix,Action<Variable,Variable> postFix) {
+        //     var (prefixData, postFixData) =
+        //         MethodData.NewRefUnary(DeclaringType, paramName,false, GetFunctionPtr(prefix), GetFunctionPtr(postFix));
+        //     Register( prefixData);
+        //     Register( postFixData);
+        // }
+#endif
+       
         
         
         public void RegisterMethod(MethodData description) {
@@ -303,18 +417,7 @@ namespace YS {
         
         
         
-        public void RegisterIncrement(string paramName,Action<Variable,Variable> prefix,Action<Variable,Variable> postFix) {
-            var (prefixData, postFixData) =
-                MethodData.NewRefUnary(DeclaringType, paramName,true, prefix, postFix);
-            Register( prefixData);
-            Register( postFixData);
-        }
-        public void RegisterDecrement(string paramName,Action<Variable,Variable> prefix,Action<Variable,Variable> postFix) {
-            var (prefixData, postFixData) =
-                MethodData.NewRefUnary(DeclaringType, paramName,false, prefix, postFix);
-            Register( prefixData);
-            Register( postFixData);
-        }
+       
         
         
         

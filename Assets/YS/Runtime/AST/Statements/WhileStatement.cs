@@ -21,12 +21,12 @@ namespace YS.AST.Statements {
 
         public void Compile(CompilingContext context) {
             context.MoveToNextStatement();
-            context.Emit(InfiniteLoop.Id);
+            context.Emit(VM.Instructions.InfiniteLoop);
             var d = context.EnterToScope();
             var (boolean,variable)=Condition.Compile(context).Cast();
             context.EmitData(IsNot ?(ushort)1:(ushort)0);
             context.EmitData(boolean);
-            context.Emit(BreakIf.Id);
+            context.Emit(VM.Instructions.BreakIf);
             foreach (var statement in Block.Statements) {
                 
                 statement.Compile(context);

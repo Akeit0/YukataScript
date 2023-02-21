@@ -1,4 +1,5 @@
-﻿using YS.Instructions;
+﻿using System.Runtime.CompilerServices;
+using YS.Instructions;
 
 namespace YS.VM {
     public  unsafe partial class VirtualMachine {
@@ -6,42 +7,10 @@ namespace YS.VM {
         internal ushort* CurrentDataPtr;
         public ushort ReadUshort() => *CurrentDataPtr++;
         public void ReadUshort(int count) => CurrentDataPtr+=count;
-        public Variable ReadVariable() =>Variables[ReadUshort()];
-        public void Delegate() {
-            DelegateLibrary.Delegates[*CurrentDataPtr++].Action();
-        }
-        public void Delegate1() {
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate1s[*currentDataPtr++].Action(Variables[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-        public void Delegate2() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate2s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-        public void Delegate3() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate3s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++],
-                vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-        public void Delegate4() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate4s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++],
-                vars[*currentDataPtr++],  vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
-         public void Delegate5() {
-            var vars = Variables;
-            var currentDataPtr = CurrentDataPtr;
-            DelegateLibrary.Delegate5s[*currentDataPtr++].Action( vars[*currentDataPtr++],  vars[*currentDataPtr++],
-                vars[*currentDataPtr++],  vars[*currentDataPtr++], vars[*currentDataPtr++]);
-            CurrentDataPtr = currentDataPtr;
-        }
+        public Variable ReadVariable() =>Variables[*CurrentDataPtr++];
+        public Variable<T> ReadVariable<T>() =>Unsafe.As<Variable<T>>(Variables[*CurrentDataPtr++]);
+        
+        public T ReadValue<T>() =>Unsafe.As<Variable<T>>(Variables[*CurrentDataPtr++]).value;
         
         
         public object ReadObject() =>Variables[ReadUshort()].ToObject();
@@ -57,14 +26,14 @@ namespace YS.VM {
         public void ExecuteUntil(ushort end) {
             var codes = Codes;
             while (CurrentInstructionIndex<end) {
-                IInstruction.Instructions[codes[CurrentInstructionIndex]].Execute(this);
+                InstructionArray[codes[CurrentInstructionIndex]](this);
                 ++CurrentInstructionIndex;
             }
         }
         public void ExecuteUntilEnd() {
             var codes = Codes;
             while (CurrentInstructionIndex<OpCount) {
-                IInstruction.Instructions[codes[CurrentInstructionIndex]].Execute(this);
+                InstructionArray[codes[CurrentInstructionIndex]](this);
                 ++CurrentInstructionIndex;
             }
         }

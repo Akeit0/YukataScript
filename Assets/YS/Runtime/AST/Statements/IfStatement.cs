@@ -31,7 +31,7 @@ namespace YS.AST.Statements {
             context.EmitData(IsNot ?(ushort)0:(ushort)1);
             context.EmitData(b);
             
-            context.Emit(ElseBlock==null? IfInstruction.Id:IfElseInstruction.Id);
+            context.Emit(ElseBlock==null? VM.Instructions.If:VM.Instructions.IfElse);
             
             var d = context.EnterToScope();
             foreach (var statement in IfBlock.Statements) {
@@ -40,7 +40,7 @@ namespace YS.AST.Statements {
             context.ExitFromScope(d);
             if (ElseBlock != null)
             {
-                context.Emit(ElseInstruction.Id);
+                context.Emit(VM.Instructions.Else);
                 d = context.EnterToScope();
                 foreach (var statement in ElseBlock.Statements) {
                     statement.Compile(context);
