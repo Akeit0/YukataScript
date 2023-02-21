@@ -16,7 +16,7 @@ __But it's in alpha and very buggy.__
 I need your help.
 ## Very easy async/await on Editor. 
 ![Async](/Images/YSAsync.gif)
-## *Exelent Performance*(I have achived 18ms on Editor and 7.4ms with IL2CPP while  C# on Editor takes 4.5ms to do same things... ).
+## *Exelent Performance*(I have achived 18ms on Editor and 7.4ms with IL2CPP while  C# on Editor takes 4.5ms to do same things. C# is a little faster ).
 ![Performance](/Images/YSPerformance.gif)
 ## Easy code generation.
 ![TypeSelect](/Images/YSTypeSelect.gif)
