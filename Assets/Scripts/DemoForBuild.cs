@@ -7,7 +7,6 @@ using YS;
 using YS.Fields;
 using YS.VM;
 using YS.UI;
-using IngameDebugConsole;
 namespace DefaultNamespace {
     [RequireComponent(typeof(UIDocument))]
     public   class DemoForBuild : MonoBehaviour {
@@ -100,7 +99,7 @@ namespace DefaultNamespace {
             }
         }
         public void Compile(string code) {
-            YS.Generated.Wrapper.Init();
+            //YS.Generated.Wrapper.Init();
             try {
                 if(_engine.TryClear()) {
                     _compiler.SourceCode =code;

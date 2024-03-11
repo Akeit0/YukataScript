@@ -167,11 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba27cbf03b404bcba3a3999823aeccbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  code: "print(color)\nprint(color*0.5f)\nvar timer=new YS.Timer(duration)\r\nwhile
-    not timer.IsExpired {\r\n\tawait 16.ms()\r\n\tvar current=timer.GetEasedRemainRatio(easingType)\r\n\ttransform.localScale=v3
-    * current\r\n}\r\nvar timer=new YS.Timer(duration)\r\nwhile not timer.IsExpired
-    {\r\n\tawait 16.ms()\r\n\tvar current=timer.GetEasedElapsedRatio(easingType)\r\n\n\ttransform.localScale=v3
-    * current\r\n}\r"
+  code: 
   TextFile: {fileID: 0}
   DoPerformanceCheck: 1
   Fields:
@@ -193,10 +189,16 @@ MonoBehaviour:
   - Name: color
     Variable:
       rid: 9208754449636917248
+  f: 1
+  v3: {x: 800000, y: 800000, z: 800000}
   DoAsync: 0
   references:
     version: 2
     RefIds:
+    - rid: 9208754293580234753
+      type: {class: UnityEngine_Vector3Variable, ns: YS.Generated, asm: Assembly-CSharp}
+      data:
+        value: {x: 6000000, y: 2000000, z: 2000000}
     - rid: 9208754304739966981
       type: {class: UnityEngine_TransformVariable, ns: YS.Generated, asm: Assembly-CSharp}
       data:

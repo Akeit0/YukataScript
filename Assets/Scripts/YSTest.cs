@@ -6,7 +6,9 @@ using UnityEngine;
 using UnityEngine.Scripting;
 using YS;
 using YS.Fields;
+using YS.Instructions;
 using YS.VM;
+//using YS.Attributes;
 using YS.Generated;
 
 namespace DefaultNamespace {
@@ -61,10 +63,10 @@ namespace DefaultNamespace {
             catch (Exception e) {
                Debug.LogException(e);
             }
+         
         }
         [Button]
         public void Run() {
-          
             if (DoAsync) {
                 RunAsync();
                 return;
@@ -78,7 +80,7 @@ namespace DefaultNamespace {
                 _engine.Process();
             }
         }
-        
+
         public bool DoAsync = false;
         async void RunAsync() {
             try {
@@ -104,7 +106,6 @@ namespace DefaultNamespace {
         public void Restart() {
              _engine.Restart();
         }
-
         
  
         StringBuilder _builder = new StringBuilder(100);
@@ -112,7 +113,7 @@ namespace DefaultNamespace {
         public void Show() {
             Debug.Log( _compiler.ToCode());
             for (int i = 0; i < _engine.OpCount; i++) {
-                Debug.Log(YS.Instructions.IInstruction.Instructions[_engine.Codes[i]]);
+                Debug.Log(IInstruction.Instructions[_engine.Codes[i]]);
             }
             for (int i = 0; i < _engine.DataCount; i++) {
                 Debug.Log(_engine.UnmanagedData[i]);
@@ -123,6 +124,8 @@ namespace DefaultNamespace {
             _builder.Clear();
           _engine.ToCode(_builder);
           Debug.Log(_builder.ToString());
+          
+          
         }
        
     }
