@@ -4,6 +4,16 @@ using YS.VM;
 // ReSharper disable EqualExpressionComparison
 
 namespace YS.Instructions {
+    
+    public sealed class IsNull : IInstruction {
+        public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
+            IInstruction.AppendIndent(builder,indentLevel);
+            IInstruction.AppendVariable(builder, vm);
+            builder.Append(" = ");
+            IInstruction.AppendVariable(builder, vm);
+            builder.Append(" == null");
+        }
+    }
     public sealed class IntRangeOp : IInstruction {
 
         public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {

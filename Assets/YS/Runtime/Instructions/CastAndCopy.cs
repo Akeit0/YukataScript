@@ -13,6 +13,17 @@ namespace YS.Instructions {
         }
 
     }
+    public sealed class Read8 : IInstruction {
+      
+
+        public void ToCode(VirtualMachine vm, StringBuilder builder, ref int indentLevel) {
+            IInstruction.AppendIndent(builder,indentLevel);
+            IInstruction.AppendVariable(builder, vm);
+            builder.Append(" =  ");
+            builder.Append(vm.ReadUshort());
+        }
+
+    }
     public sealed class Read16 : IInstruction {
       
 

@@ -4,16 +4,50 @@ using YS.VM;
 
 namespace YS.Instructions {
     public interface IInstruction {
-        static IInstruction() {
-            Instructions[0]= new DelegateOp();
-            Instructions[1]= new Delegate1Op();
-            Instructions[2]= new Delegate2Op();
-            Instructions[3]= new Delegate3Op();
-            Instructions[4]= new Delegate4Op();
-            Instructions[5]= new Delegate5Op();
-            Instructions[6]= new Delegate6Op();
+        static IInstruction()
+        {
+            Instructions = new IInstruction[]
+            {
+                new DelegateOp(),
+                new Delegate1Op(),
+                new Delegate2Op(),
+                new Delegate3Op(),
+                new Delegate4Op(),
+                new Delegate5Op(),
+                new Delegate6Op(),
+                new MethodInfoInvoker(),
+                new Copy(),
+                new Read8(),
+                new Read16(),
+                new Read32(),
+                new Read64(),
+                new CopyObject(),
+                new IsNull(),
+                new Return(),
+                new Break(),
+                new BreakIf(),
+                new Continue(),
+                new InfiniteLoop(),
+                new ForEach(),
+                new IfInstruction(),
+                new IfElseInstruction(),
+                new ElseInstruction(),
+                new AwaitableVoidPattern(),
+                new CustomAwaiter(),
+                new IntRangeOp(),
+                new IntArithmeticOp(),
+                new FloatArithmeticOp(),
+                new DoubleArithmeticOp(),
+                new Boxing(),
+                new IntToFloat(),
+                new IntToDouble(),
+                new FloatToDouble(),
+
+
+            };
+
         }
-        public static IInstruction[] Instructions=new IInstruction[255] ;
+        public static readonly IInstruction[] Instructions;
         public static byte Count=7;
         public static void AppendVariable(StringBuilder builder, VirtualMachine vm) {
             var num = vm.ReadUshort();

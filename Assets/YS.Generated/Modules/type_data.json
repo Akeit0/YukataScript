@@ -79,6 +79,10 @@
         {
             "Name": "UnityEngine.Renderer",
             "CodeGenerationType": 2
+        },
+        {
+            "Name": "YS.EasingType",
+            "CodeGenerationType": 2
         }
     ]
 }
